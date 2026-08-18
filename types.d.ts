@@ -1,1 +1,1 @@
-export interface Input{weight:string|number;unit:'oz'|'g';wax:'soy'|'paraffin'|'beeswax'|'coconut';wicks:string|number}export interface Estimate{ounces:number;hours:number;wax:Input['wax'];wicks:number;rangeText:string;durationText:string}export interface Entry{id:string;name:string;result:string;detail?:string}
+export interface Input{weight:string|number;unit:'oz'|'g';wax:string;wicks:string|number}
