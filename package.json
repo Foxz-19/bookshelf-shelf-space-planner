@@ -1,0 +1,8 @@
+{
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests.mjs",
+    "check": "node --check app.js && node --check calculator.js && node --check storage.js && node --check ui.js"
+  }
+}

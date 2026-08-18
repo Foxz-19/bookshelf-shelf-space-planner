@@ -1,35 +1,4 @@
-/** @typedef {import('./types.d.ts').ShowerThought} ShowerThought */
-
-/** @param {string} value @returns {string} */
-function escapeText(value) {
-  const element = document.createElement('div');
-  element.textContent = value;
-  return element.innerHTML;
-}
-
-/** @param {string} value @returns {string} */
-function escapeAttribute(value) {
-  return escapeText(value).replaceAll('"', '&quot;');
-}
-
-/** @param {string} date @returns {string} */
-export function formatDate(date) {
-  return new Intl.DateTimeFormat(undefined, {
-    month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit'
-  }).format(new Date(date));
-}
-
-/** @param {number} seconds @returns {string} */
-export function formatCaptureTime(seconds) {
-  if (seconds < 60) return 'at the very start';
-  const minutes = Math.floor(seconds / 60);
-  const remainder = seconds % 60;
-  return `${minutes} min${remainder ? ` ${remainder} sec` : ''} in`;
-}
-
-/** @param {ShowerThought} thought @returns {HTMLLIElement} */
-export function createThoughtRow(thought) {
-  const row = document.createElement('li');
-  row.innerHTML = `<p>${escapeText(thought.text)}</p><footer><time datetime="${escapeAttribute(thought.createdAt)}">${formatDate(thought.createdAt)}</time><span>Captured ${formatCaptureTime(thought.elapsedSeconds)}</span><button type="button" data-delete="${escapeAttribute(thought.id)}" aria-label="Delete thought: ${escapeAttribute(thought.text)}">Delete</button></footer>`;
-  return row;
-}
+export function setText(n,t){n.textContent=t}
+export function setHidden(n,v){n.hidden=v}
+export function savedCandleDetail(e){return e.detail||'Saved estimate'}
+export function renderSavedCandles(list,empty,entries,remove){list.replaceChildren();setHidden(empty,!!entries.length);entries.forEach(function add(e){const item=document.createElement('li'),main=document.createElement('div'),name=document.createElement('p'),detail=document.createElement('p'),result=document.createElement('p'),button=document.createElement('button');item.className='collection-item';main.className='item-main';name.className='item-name';name.textContent=e.name;detail.className='item-detail';detail.textContent=savedCandleDetail(e);result.className='item-result';result.textContent=e.result;button.className='delete-button';button.type='button';button.setAttribute('aria-label',`Delete ${e.name}`);button.textContent='×';button.addEventListener('click',function click(){remove(e.id,button)});main.append(name,detail);item.append(main,result,button);list.append(item)})}

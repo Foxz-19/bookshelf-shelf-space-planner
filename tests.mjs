@@ -1,25 +1,7 @@
-import assert from 'node:assert/strict';
-import { elapsed, formatTime, isLastMinute, makeTimer, remainingAt, tick } from './timer.js';
-import { loadThoughts, saveThoughts } from './storage.js';
-
-const memory = new Map();
-globalThis.localStorage = {
-  getItem: (key) => memory.get(key) ?? null,
-  setItem: (key, value) => memory.set(key, value)
-};
-
-assert.equal(formatTime(65), '01:05');
-assert.deepEqual(tick({ totalSeconds: 60, remainingSeconds: 1, running: true }), { totalSeconds: 60, remainingSeconds: 0, running: false });
-assert.deepEqual(tick({ totalSeconds: 120, remainingSeconds: 61, running: true }), { totalSeconds: 120, remainingSeconds: 60, running: true });
-assert.equal(remainingAt(6000, 5001), 1);
-assert.equal(remainingAt(6000, 6000), 0);
-assert.equal(isLastMinute(60), true);
-assert.equal(isLastMinute(59), true);
-assert.equal(isLastMinute(0), false);
-assert.equal(elapsed(makeTimer(8)), 0);
-memory.set('mist-shower-thoughts-v1', JSON.stringify({ version: 1, thoughts: [{ id: 'valid', text: 'Keep this', createdAt: '2026-01-01T00:00:00.000Z', elapsedSeconds: 1 }, { id: 'x'.repeat(101), text: 'Valid', createdAt: '2026-01-01T00:00:00.000Z', elapsedSeconds: 1 }] }));
-assert.equal(loadThoughts().thoughts.length, 1);
-assert.match(loadThoughts().warning, /invalid saved thoughts/);
-globalThis.localStorage.setItem = () => { throw new Error('blocked'); };
-assert.equal(saveThoughts([]).ok, false);
-console.log('Timer unit tests passed');
+import test from'node:test';import assert from'node:assert/strict';import{calculateEstimate,validateInput}from'./calculator.js';import{MAX_CANDLES,STORAGE_KEY,readCandles,writeCandles}from'./storage.js';import{savedCandleDetail}from'./ui.js';
+const store=raw=>{const data=new Map(raw===null?[]:[[STORAGE_KEY,raw]]);function getItem(k){return data.get(k)??null}function setItem(k,v){data.set(k,v)}return{getItem,setItem,data}};
+test('soy math returns the ±10% range',()=>{const r=calculateEstimate({weight:'20',unit:'oz',wax:'soy',wicks:'1'});assert.equal(r.ok,true);assert.equal(r.value.hours,20);assert.equal(r.value.rangeText,'About 18–22 hours of glow')});
+test('grams convert and wicks divide',()=>{const r=calculateEstimate({weight:'56.699',unit:'g',wax:'paraffin',wicks:'2'});assert.equal(r.ok,true);assert.ok(Math.abs(r.value.hours-.75)<.001);assert.equal(r.value.durationText,'45 min')});
+test('validation and rendering helpers reject unsafe input',()=>{assert.deepEqual(Object.keys(validateInput({weight:'',unit:'lb',wax:'bad',wicks:'1.5'})).sort(),['unit','wax','weight','wicks']);assert.equal(calculateEstimate({weight:'5001',unit:'oz',wax:'soy',wicks:'1'}).ok,false);assert.equal(savedCandleDetail({id:'x',name:'A',result:'R'}),'Saved estimate')});
+test('corrupt data is recovered and collections stay capped',()=>{const s=store('{bad');const r=readCandles(s);assert.deepEqual(r.entries,[]);assert.equal(r.issue,'recovered');const entries=Array.from({length:7},(_,i)=>({id:String(i),name:`Candle ${i}`,result:'About 1 hour of glow'}));assert.equal(writeCandles(entries,s).ok,true);assert.equal(JSON.parse(s.data.get(STORAGE_KEY)).length,MAX_CANDLES)});
+test('storage write failures are returned',()=>{const s={getItem:()=>null,setItem:()=>{throw Error('blocked')}};assert.deepEqual(writeCandles([],s),{ok:false,issue:'unavailable'})});

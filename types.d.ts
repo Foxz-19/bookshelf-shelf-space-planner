@@ -1,3 +1,1 @@
-/** A thought captured during a timed shower. */
-export interface ShowerThought { id: string; text: string; createdAt: string; elapsedSeconds: number; }
-export interface StoredThoughts { version: 1; thoughts: ShowerThought[]; }
+export interface Input{weight:string|number;unit:'oz'|'g';wax:'soy'|'paraffin'|'beeswax'|'coconut';wicks:string|number}export interface Estimate{ounces:number;hours:number;wax:Input['wax'];wicks:number;rangeText:string;durationText:string}export interface Entry{id:string;name:string;result:string;detail?:string}

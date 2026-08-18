@@ -1,23 +1,5 @@
-/** @typedef {import('./types.d.ts').ShowerThought} ShowerThought */
-const KEY = 'mist-shower-thoughts-v1';
-/** @param {ShowerThought[]} thoughts @returns {{ok:boolean,error?:string}} */
-export function saveThoughts(thoughts) {
-  try { localStorage.setItem(KEY, JSON.stringify({ version: 1, thoughts })); return { ok: true }; }
-  catch { return { ok: false, error: 'Your browser could not save this change. Try again or free storage space.' }; }
-}
-/** @returns {{thoughts:ShowerThought[],error?:string,warning?:string}} */
-export function loadThoughts() {
-  try {
-    const raw = localStorage.getItem(KEY); if (!raw) return { thoughts: [] };
-    const data = JSON.parse(raw);
-    if (!data || data.version !== 1 || !Array.isArray(data.thoughts)) throw new Error('Invalid archive');
-    const thoughts = data.thoughts.filter(validThought);
-    return thoughts.length === data.thoughts.length ? { thoughts } : { thoughts, warning: 'Some invalid saved thoughts were safely removed from your archive.' };
-  } catch { return { thoughts: [], error: 'Your saved archive could not be read, so Mist started a fresh one.' }; }
-}
-/** @param {unknown} value @returns {value is ShowerThought} */
-function validThought(value) {
-  if (!value || typeof value !== 'object') return false;
-  const record = /** @type {Record<string, unknown>} */ (value);
-  return typeof record.id === 'string' && record.id.length <= 100 && typeof record.text === 'string' && record.text.length <= 400 && record.text.trim() !== '' && typeof record.createdAt === 'string' && !Number.isNaN(Date.parse(record.createdAt)) && typeof record.elapsedSeconds === 'number' && Number.isFinite(record.elapsedSeconds) && record.elapsedSeconds >= 0;
-}
+export const STORAGE_KEY='wick-candle-collection-v1',MAX_CANDLES=5;
+export function getBrowserStorage(){try{return globalThis.localStorage??null}catch{return null}}
+export function isCandleEntry(v){return!!(v&&typeof v==='object'&&typeof v.id==='string'&&typeof v.name==='string'&&v.name.trim()&&typeof v.result==='string'&&v.result.trim())}
+export function readCandles(s=getBrowserStorage()){if(!s?.getItem)return{entries:[],issue:'unavailable'};try{const raw=s.getItem(STORAGE_KEY);if(raw===null)return{entries:[],issue:null};const data=JSON.parse(raw);if(!Array.isArray(data))return recover(s);const entries=data.filter(isCandleEntry).slice(0,MAX_CANDLES);return{entries,issue:entries.length===data.length?null:'recovered'}}catch{return recover(s)}}function recover(s){try{s.setItem(STORAGE_KEY,'[]');return{entries:[],issue:'recovered'}}catch{return{entries:[],issue:'unavailable'}}}
+export function writeCandles(entries,s=getBrowserStorage()){if(!s?.setItem)return{ok:false,issue:'unavailable'};try{s.setItem(STORAGE_KEY,JSON.stringify(entries.slice(0,MAX_CANDLES)));return{ok:true}}catch{return{ok:false,issue:'unavailable'}}}
