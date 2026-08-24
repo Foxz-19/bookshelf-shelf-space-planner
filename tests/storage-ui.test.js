@@ -1,0 +1,13 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { loadEntries, saveEntries } from '../js/storage.js';
+import { renderEntries } from '../js/ui.js';
+
+const record = { id: '12345678-abcd', name: 'Pothos', method: 'Water', startedAt: '2026-08-24', status: 'rooting', note: '<fresh>', createdAt: '2026-08-24T00:00:00.000Z' };
+const memoryStorage = (initial = {}) => ({ values: { ...initial }, getItem(key) { return this.values[key] ?? null; }, setItem(key, value) { this.values[key] = value; }, removeItem(key) { delete this.values[key]; } });
+test('round-trips valid records and reports corrupt recovery', () => { const storage = memoryStorage(); assert.equal(saveEntries([record], storage).error, null); assert.deepEqual(loadEntries(storage).entries, [record]); storage.values['rooted-propagations-v1'] = '[{"id":"unsafe"}]'; const recovered = loadEntries(storage); assert.equal(recovered.entries.length, 0); assert.match(recovered.error, /unreadable/); });
+test('clears malformed JSON during recovery', () => { const storage = memoryStorage({ 'rooted-propagations-v1': '{bad json' }); assert.match(loadEntries(storage).error, /unreadable/); assert.equal(storage.getItem('rooted-propagations-v1'), null); });
+test('reports unavailable storage writes without throwing', () => { const unavailable = { setItem() { throw Error('blocked'); } }; assert.match(saveEntries([record], unavailable).error, /could not be saved/); });
+test('reports unavailable storage reads without throwing', () => { const unavailable = { getItem() { throw Error('blocked'); } }; assert.match(loadEntries(unavailable).error, /could not be opened/); });
+test('renders escaped visual cards and a useful empty state', () => { const card = renderEntries([record], 'all'); assert.match(card, /Pothos/); assert.match(card, /&lt;fresh&gt;/); assert.match(card, /badge-rooting/); assert.match(renderEntries([], 'all'), /Your bench is ready/); });
+test('accepts only complete backup records', async () => { const { isValidEntries } = await import('../js/storage.js'); assert.equal(isValidEntries([record]), true); assert.equal(isValidEntries([{ ...record, status: 'unknown' }]), false); });

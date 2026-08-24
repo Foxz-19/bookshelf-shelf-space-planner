@@ -1,8 +1,6 @@
 {
-  "name": "sleep-debt-calculator",
-  "private": true,
+  "name": "rooted-propagation-tracker",
   "version": "1.0.0",
   "type": "module",
-  "scripts": { "dev": "vite", "build": "tsc && vite build", "test": "tsx --test tests/**/*.test.ts", "test:ui": "python tests/ui-smoke.py" },
-  "devDependencies": { "@types/node": "latest", "tsx": "latest", "typescript": "latest", "vite": "latest" }
+  "scripts": { "test": "node --test tests/*.test.js" }
 }
