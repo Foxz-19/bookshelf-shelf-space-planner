@@ -10,7 +10,7 @@
     <main class="app" aria-labelledby="page-title">
       <header>
         <p class="eyebrow">WEEKLY RECOVERY TRACKER</p>
-        <div class="title-row"><h1 id="page-title">Rest ledger</h1><button class="reset" id="reset" type="button">Reset week</button></div>
+        <div class="title-row"><h1 id="page-title">Rest ledger</h1><div class="reset-control"><button class="reset" id="reset" type="button">Reset week</button><span class="shortcut-hint">Press <kbd>R</kbd></span></div></div>
         <p class="intro">A clear view of the sleep you have banked — and the sleep you still owe yourself.</p>
       </header>
       <section class="goal-bar" aria-label="Sleep goal settings">
@@ -22,7 +22,7 @@
         <div id="days" class="days"></div>
       </section>
       <section class="summary" aria-live="polite" aria-atomic="true" aria-labelledby="summary-title">
-        <div class="summary-copy"><p class="eyebrow" id="summary-title">WEEKLY BALANCE</p><output id="message">Add your sleep to begin</output></div>
+        <div class="summary-copy"><p class="eyebrow" id="summary-title">WEEKLY BALANCE</p><output id="message">Add your sleep to begin</output><span id="insight" class="insight"></span></div>
         <div class="ring" id="ring" role="img" aria-label="0 percent of weekly sleep goal reached"><strong id="percent">0%</strong><span>of goal</span></div>
         <div class="progress-wrap"><div class="progress-label"><span id="progressText">0 of 56 hours</span><span id="remaining">56 hrs to goal</span></div><div class="track"><div id="progress" class="progress"></div></div></div>
       </section>

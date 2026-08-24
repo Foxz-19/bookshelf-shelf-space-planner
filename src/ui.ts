@@ -1,5 +1,5 @@
 import { DAYS, type SleepState } from './types';
-import { dayDifference, totals, formatHours, balanceMessage } from './calculations';
+import { dayDifference, totals, formatHours, balanceMessage, longestNight } from './calculations';
 
 const byId = <T extends HTMLElement>(id: string): T => document.getElementById(id) as T;
 const sign = (value: number) => value > 0 ? '+' : value < 0 ? '−' : '±';
@@ -22,6 +22,7 @@ export function renderDays(state: SleepState, onChange: (day: typeof DAYS[number
 export function renderSummary(state: SleepState): void {
   const data = totals(state), percent = Math.round(data.progress), isDebt = data.difference < 0;
   byId<HTMLOutputElement>('message').value = balanceMessage(data.difference);
+  byId<HTMLElement>('insight').textContent = longestNight(state);
   byId<HTMLElement>('percent').textContent = `${percent}%`;
   byId<HTMLElement>('progress').style.width = `${data.progress}%`;
   byId<HTMLElement>('progressText').textContent = `${formatHours(data.slept)} of ${formatHours(data.target)} hours`;

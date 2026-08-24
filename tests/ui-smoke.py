@@ -33,6 +33,8 @@ try:
         require(page.locator(".today").count() == 1, "Expected exactly one current-day marker")
         require(page.evaluate("document.documentElement.scrollHeight <= window.innerHeight"), "Laptop layout must not scroll")
         require(page.locator("#ring").get_attribute("title") == "0% of your weekly sleep goal reached", "Progress tooltip is missing")
+        require(page.locator(".shortcut-hint").inner_text() == "Press R", "Reset shortcut hint is missing")
+        require(page.locator("#insight").inner_text() == "No sleep logged yet", "Empty-week insight is missing")
 
         monday_buttons = page.locator(".day").first.locator(".stepper button")
         monday_buttons.nth(1).click()
@@ -43,6 +45,7 @@ try:
         page.locator("#sleep-0").fill("6.5")
         require(page.locator(".day").first.locator(".delta").inner_text() == "−1.5 hrs", "Daily deficit did not update")
         require("49.5 hours" in page.locator("#message").inner_text(), "Weekly debt did not update")
+        require("Longest night: Monday" in page.locator("#insight").inner_text(), "Longest-night insight did not update")
 
         page.locator("#goal").fill("7")
         require(page.locator(".day").first.locator(".delta").inner_text() == "−0.5 hrs", "Goal change did not update each day")
@@ -67,6 +70,9 @@ try:
         values = page.locator(".stepper input").evaluate_all("inputs => inputs.map(input => input.value)")
         require(all(value == "0" for value in values), "Reset did not clear all sleep entries")
         require("All inputs are now zero" in page.locator("#notice").inner_text(), "Reset status was not announced")
+        dark_page = browser.new_page(color_scheme="dark")
+        dark_page.goto("http://127.0.0.1:5173", wait_until="networkidle")
+        require(dark_page.evaluate("getComputedStyle(document.body).backgroundColor") == "rgb(16, 35, 31)", "Dark mode did not apply")
         browser.close()
 finally:
     server.terminate()

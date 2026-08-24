@@ -15,3 +15,8 @@ export function balanceMessage(value: number): string {
   return 'Your week is perfectly balanced';
 }
 export const dayDifference = (state: SleepState, day: Day) => difference(state.hours[day], state.goal);
+export function longestNight(state: SleepState): string {
+  const entries = Object.entries(state.hours).map(([day, hours]) => [day as Day, clampHours(hours)] as const);
+  const [day, hours] = entries.reduce((longest, entry) => entry[1] > longest[1] ? entry : longest);
+  return hours === 0 ? 'No sleep logged yet' : `Longest night: ${day} · ${formatHours(hours)} hrs`;
+}

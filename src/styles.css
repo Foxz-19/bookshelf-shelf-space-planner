@@ -10,6 +10,18 @@
   --serif: Georgia, serif;
   --sans: Inter, ui-sans-serif, system-ui, sans-serif;
 }
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --ink: #edf5ee;
+    --muted: #afc0b7;
+    --paper: #10231f;
+    --line: #385047;
+    --good: #7fe6af;
+    --bad: #ff9d9d;
+  }
+}
 * {
   box-sizing: border-box;
 }
@@ -52,6 +64,26 @@ header {
   justify-content: space-between;
   align-items: baseline;
   gap: 20px;
+}
+
+.reset-control {
+  align-items: end;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.shortcut-hint {
+  color: var(--muted);
+  font-size: 9px;
+}
+
+kbd {
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  color: var(--ink);
+  font: inherit;
+  padding: 0 3px;
 }
 h1,
 h2,
@@ -216,6 +248,13 @@ h2 {
   font: clamp(18px, 2.2vw, 27px) / 1.05 var(--serif);
   letter-spacing: -0.04em;
 }
+
+.insight {
+  color: var(--muted);
+  display: block;
+  font-size: 10px;
+  margin-top: 7px;
+}
 .ring {
   --amount: 0deg;
   width: 76px;
@@ -271,6 +310,8 @@ h2 {
 }
 dialog {
   border: 0;
+  background: var(--paper);
+  color: var(--ink);
   padding: 0;
   width: min(380px, calc(100% - 32px));
   box-shadow: 0 18px 70px #10231f44;
