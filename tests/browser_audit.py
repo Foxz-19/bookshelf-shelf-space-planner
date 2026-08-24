@@ -50,6 +50,14 @@ with sync_playwright() as p:
     page.locator("#import-data").set_input_files({"name": "rooted-backup.json", "mimeType": "application/json", "buffer": json.dumps(imported).encode()})
     assert page.get_by_text("Imported fern", exact=True).count() == 1
     assert page.locator("#count-potted").inner_text() == "1"
+    page.locator("#search").fill("fern")
+    assert page.get_by_text("Imported fern", exact=True).count() == 1
+    page.locator("#sort").select_option("name")
+    page.get_by_role("button", name="Clear").click()
+    assert page.locator("#search").input_value() == ""
+    assert page.locator("#sort").input_value() == "newest"
+    page.locator("#import-data").set_input_files({"name": "invalid.json", "mimeType": "application/json", "buffer": b"not-json"})
+    assert "not a valid" in page.locator("#toast").inner_text()
 
     page.evaluate("localStorage.setItem('rooted-propagations-v1', '{bad json')")
     page.reload(wait_until="networkidle")

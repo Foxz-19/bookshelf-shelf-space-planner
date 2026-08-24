@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadEntries, saveEntries } from '../js/storage.js';
-import { renderEntries } from '../js/ui.js';
+import { renderEntries, startedLabel } from '../js/ui.js';
 
 const record = { id: '12345678-abcd', name: 'Pothos', method: 'Water', startedAt: '2026-08-24', status: 'rooting', note: '<fresh>', createdAt: '2026-08-24T00:00:00.000Z' };
 const memoryStorage = (initial = {}) => ({ values: { ...initial }, getItem(key) { return this.values[key] ?? null; }, setItem(key, value) { this.values[key] = value; }, removeItem(key) { delete this.values[key]; } });
@@ -11,3 +11,4 @@ test('reports unavailable storage writes without throwing', () => { const unavai
 test('reports unavailable storage reads without throwing', () => { const unavailable = { getItem() { throw Error('blocked'); } }; assert.match(loadEntries(unavailable).error, /could not be opened/); });
 test('renders escaped visual cards and a useful empty state', () => { const card = renderEntries([record], 'all'); assert.match(card, /Pothos/); assert.match(card, /&lt;fresh&gt;/); assert.match(card, /badge-rooting/); assert.match(renderEntries([], 'all'), /Your bench is ready/); });
 test('accepts only complete backup records', async () => { const { isValidEntries } = await import('../js/storage.js'); assert.equal(isValidEntries([record]), true); assert.equal(isValidEntries([{ ...record, status: 'unknown' }]), false); });
+test('renders ages and searches or sorts the collection', () => { const newer = { ...record, id: '12345678-newer', name: 'ZZ plant', startedAt: '2026-08-25', status: 'failed' }; assert.equal(startedLabel('2026-08-24', new Date('2026-08-25T12:00:00')), 'Started 1 day ago'); assert.match(renderEntries([record, newer], 'all', 'zz', 'name'), /ZZ plant/); assert.doesNotMatch(renderEntries([record, newer], 'all', 'zz', 'name'), /Pothos/); const oldest = renderEntries([record, newer], 'all', '', 'oldest'), status = renderEntries([newer, record], 'all', '', 'status'); assert.ok(oldest.indexOf('Pothos') < oldest.indexOf('ZZ plant')); assert.ok(status.indexOf('Pothos') < status.indexOf('ZZ plant')); });
