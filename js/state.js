@@ -10,6 +10,12 @@ export function createEntry(formData) {
   if (!isValidDate(startedAt)) return { entry: null, error: 'Please choose a valid start date.' };
   return { entry: { id: createId(), name, method, startedAt, note, status: 'attempting', createdAt: new Date().toISOString() }, error: null };
 }
+/** @param {import('./types.js').Propagation[]} entries @param {string} id @param {FormData} formData */
+export function updateEntry(entries, id, formData) {
+  const result = createEntry(formData);
+  if (result.error) return { entries, error: result.error };
+  return { entries: entries.map((entry) => entry.id === id ? { ...entry, name: result.entry.name, method: result.entry.method, startedAt: result.entry.startedAt, note: result.entry.note } : entry), error: null };
+}
 /** @param {import('./types.js').Propagation[]} entries @param {string} id @param {import('./types.js').Status} status */
 export function updateStatus(entries, id, status) {
   if (!STATUSES.includes(status)) return entries;
