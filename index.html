@@ -5,9 +5,9 @@
   <title>Roller Paint Calculator</title><link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header><a class="brand" href="#calculator">roller<span>.</span></a><button class="text-button" id="reset-plan" type="button">Reset plan</button><p>Paint coverage calculator</p></header>
+  <header><a class="brand" href="#calculator">roller<span>.</span></a><button class="text-button" id="reset-plan" type="button">Reset plan</button><p id="save-status">Paint coverage calculator</p></header>
   <main id="calculator">
-    <section class="intro"><p class="eyebrow">Weekend project planner</p><h1>Buy the right<br><em>amount</em> of paint.</h1><p>Measure each wall, subtract openings, and get a dependable shopping number.</p></section>
+    <section class="intro"><p class="eyebrow">Weekend project planner</p><h1>Buy the right<br><em>amount</em> of paint.</h1><p>Measure each wall, subtract openings, and get a dependable shopping number.</p><ol class="workflow" aria-label="How it works"><li><b>01</b> Measure each wall</li><li><b>02</b> Remove doors and windows</li><li><b>03</b> Buy with confidence</li></ol></section>
     <section class="workspace" aria-label="Paint calculator">
       <form id="wall-form" class="entry" novalidate>
         <div class="section-head"><div><p class="eyebrow">01 / Walls</p><h2>Add a wall</h2></div><span id="wall-count">0 of 6</span></div>
@@ -22,7 +22,7 @@
       </form>
       <section class="coats" aria-labelledby="coat-title"><div><p class="eyebrow">03 / Coats</p><h2 id="coat-title">How many coats?</h2></div><div class="stepper"><button type="button" data-coat-change="-1" aria-label="Use one less coat">−</button><output id="coat-count" aria-live="polite">2</output><button type="button" data-coat-change="1" aria-label="Use one more coat">+</button></div></section>
     </section>
-    <aside class="result" aria-labelledby="result-title"><p class="eyebrow">Your paint plan</p><h2 id="result-title">Coverage<br>summary</h2><dl><div><dt>Paintable area</dt><dd><strong id="area-result">0</strong> sq ft</dd></div><div><dt>Exact paint needed</dt><dd><strong id="exact-result">0.00</strong> gallons</dd></div></dl><div class="buy"><span>Gallons to buy</span><strong id="buy-result">0</strong><small>rounded up for full coverage</small></div><p class="coverage-note">Based on standard coverage of 350 sq ft per gallon.</p></aside>
+    <aside class="result" aria-labelledby="result-title"><p class="eyebrow">Your paint plan</p><h2 id="result-title">Coverage<br>summary</h2><p id="plan-status" class="plan-status" aria-live="polite">Add a wall to begin your plan.</p><dl><div><dt>Paintable area</dt><dd><strong id="area-result">0</strong> sq ft</dd></div><div><dt>Exact paint needed</dt><dd><strong id="exact-result">0.00</strong> gallons</dd></div></dl><div class="buy"><span>Gallons to buy</span><strong id="buy-result">0</strong><small>rounded up for full coverage</small></div><p class="coverage-note">Based on standard coverage of 350 sq ft per gallon.</p></aside>
   </main>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <dialog id="confirm-dialog" aria-labelledby="dialog-title"><form method="dialog"><p class="eyebrow">Confirm action</p><h2 id="dialog-title">Remove this item?</h2><p id="dialog-message"></p><div><button value="cancel" class="secondary">Keep it</button><button value="confirm" class="danger">Continue</button></div></form></dialog>

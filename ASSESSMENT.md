@@ -58,6 +58,8 @@ This report applies `prompt.md` to the Paint Roller Coverage Calculator describe
 - The result panel remains visible while scrolling on desktop; compact mobile layout stays in normal document flow.
 - A live draft note quantifies the pending area change, openings show their saved subtraction total, and an explicit openings empty state removes ambiguity.
 - Success feedback confirms add, delete, clear, and reset actions without replacing a persistent storage-error message.
+- The UI now labels saved walls by position, shows a concise live plan context in the result panel, provides a three-step orientation guide, and distinguishes local-save availability in the header.
+- Subtle list entrance and button feedback improve affordance; the `prefers-reduced-motion` rule removes that motion when requested.
 
 ## Verification evidence
 
@@ -66,7 +68,7 @@ This report applies `prompt.md` to the Paint Roller Coverage Calculator describe
 | Unit tests | `npm test` | Pass: 6/6 |
 | Syntax | `node --check js/app.js`, `core.js`, `storage.js` | Pass |
 | HTTP serving | `HEAD http://localhost:4173` | `200 OK` |
-| Raw source constraint | Actual source files only: HTML, CSS, JS, package, and tests. Markdown/text excluded. | **18,258 bytes**, within 25,600-byte limit |
+| Raw source constraint | Actual source files only: HTML, CSS, JS, package, and tests. Markdown/text excluded. | **19,617 bytes**, within 25,600-byte limit |
 | Browser-tool health | `agent-browser doctor --offline --quick` | Pass: 6 checks, 0 failures |
 | Browser interaction/a11y scan | A clean browser session still timed out while attaching to the responsive local server. | Not counted as passed |
 
@@ -85,11 +87,11 @@ Pure calculations and malformed-storage recovery are automated. DOM interaction 
     },
     "problem_solving_design": {
       "score": 5,
-      "reasoning": "The measure, subtract, choose-coats, and buy workflow directly serves a DIY paint shopper. A sticky desktop purchase result, draft-area feedback, opening summary, empty state, explicit success feedback, responsive layout, labelled controls, and accessible confirmation flow make the product clear and polished."
+      "reasoning": "The measure, subtract, choose-coats, and buy workflow directly serves a DIY paint shopper. A three-step orientation guide, sticky desktop purchase result, draft-area feedback, live plan context, opening summary, empty state, explicit success feedback, responsive layout, and accessible confirmation flow make the product clear and polished."
     },
     "technical_craft": {
       "score": 5,
-      "reasoning": "The app uses ES modules, JSDoc state contracts, shared design tokens, deterministic bounded calculation logic, defensive local storage validation, safe ID and opening-type allowlisting before HTML rendering, accessible dialog focus restoration, and a wired six-test Node suite. It is 18,258 raw-source bytes, safely below the limit."
+      "reasoning": "The app uses ES modules, JSDoc state contracts, shared design tokens, deterministic bounded calculation logic, defensive local storage validation, safe ID and opening-type allowlisting before HTML rendering, accessible dialog focus restoration, reduced-motion support, and a wired six-test Node suite. It is 19,617 raw-source bytes, safely below the limit."
     },
     "overall_summary": "A complete Paint Roller Coverage Calculator with live, safe calculations and a compact, maintainable browser-only implementation. Six confirmed edge-case defects were fixed in the final deep review."
   }
