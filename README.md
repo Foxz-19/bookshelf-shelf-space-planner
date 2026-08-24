@@ -1,1 +1,0 @@
-# plant-propagation-tracker

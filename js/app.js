@@ -1,24 +1,87 @@
-import { isValidEntries, loadEntries, saveEntries } from './storage.js';
-import { createEntry, getSummary, removeEntry, updateEntry, updateStatus } from './state.js';
-import { renderEntries, renderSummary } from './ui.js';
-
-const form = document.querySelector('#entry-form'), entriesNode = document.querySelector('#entries'), filter = document.querySelector('#filter'), search = document.querySelector('#search'), sort = document.querySelector('#sort'), clearFilters = document.querySelector('#clear-filters'), errorNode = document.querySelector('#form-error'), dialog = document.querySelector('#delete-dialog'), editDialog = document.querySelector('#edit-dialog'), editForm = document.querySelector('#edit-form'), editError = document.querySelector('#edit-error'), toast = document.querySelector('#toast'), exportButton = document.querySelector('#export-data'), importInput = document.querySelector('#import-data');
-let { entries, error } = loadEntries(), pendingDeleteId = null, pendingEditId = null, lastDeleted = null, toastTimer;
-document.querySelector('#today').textContent = new Intl.DateTimeFormat(undefined, { weekday: 'long', month: 'long', day: 'numeric' }).format(new Date());
-document.querySelector('#startedAt').valueAsDate = new Date();
-function notify(message, persistent = false) { toast.textContent = message; toast.classList.add('show'); clearTimeout(toastTimer); if (!persistent) toastTimer = setTimeout(() => toast.classList.remove('show'), 5200); }
-function offerUndo(entry) { clearTimeout(toastTimer); lastDeleted = entry; toast.replaceChildren(document.createTextNode('Record removed. ')); const button = document.createElement('button'); button.type = 'button'; button.className = 'undo-button'; button.textContent = 'Undo'; button.addEventListener('click', () => { if (!lastDeleted || !commit([lastDeleted, ...entries])) return; lastDeleted = null; render(); notify('Record restored.'); }); toast.append(button); toast.classList.add('show'); toastTimer = setTimeout(() => { lastDeleted = null; toast.classList.remove('show'); }, 8000); }
-function commit(nextEntries, errorTarget = errorNode) { const result = saveEntries(nextEntries); if (result.error) { notify(result.error, true); errorTarget.textContent = result.error; errorTarget.hidden = false; return false; } entries = nextEntries; return true; }
-function render() { renderSummary(getSummary(entries)); document.querySelector('#total-count').textContent = String(entries.length); entriesNode.innerHTML = renderEntries(entries, filter.value, search.value, sort.value); entriesNode.setAttribute('aria-busy', 'false'); }
-if (error) notify(error, true); render();
-form.addEventListener('submit', (event) => { event.preventDefault(); errorNode.hidden = true; const result = createEntry(new FormData(form)); if (result.error) { errorNode.textContent = result.error; errorNode.hidden = false; return; } if (!commit([result.entry, ...entries])) return; render(); form.reset(); document.querySelector('#startedAt').valueAsDate = new Date(); document.querySelector('#name').focus(); notify(`${result.entry.name} added to the bench.`); });
-filter.addEventListener('change', render); search.addEventListener('input', render); sort.addEventListener('change', render);
-clearFilters.addEventListener('click', () => { search.value = ''; filter.value = 'all'; sort.value = 'newest'; render(); search.focus(); });
-entriesNode.addEventListener('change', (event) => { const select = event.target.closest('[data-action="status"]'); if (!select) return; const id = select.closest('.entry').dataset.id; const label = select.selectedOptions[0].text; if (!commit(updateStatus(entries, id, select.value))) { render(); return; } render(); notify(`Moved to ${label}.`); });
-entriesNode.addEventListener('click', (event) => { const button = event.target.closest('[data-action]'); if (!button) return; const id = button.closest('.entry').dataset.id; const entry = entries.find((item) => item.id === id); if (!entry) return; if (button.dataset.action === 'delete') { pendingDeleteId = id; document.querySelector('#delete-description').textContent = `Remove ${entry.name} from your bench? This can’t be undone.`; dialog.showModal(); return; } if (button.dataset.action === 'edit') { pendingEditId = id; editError.hidden = true; editForm.elements.name.value = entry.name; editForm.elements.method.value = entry.method; editForm.elements.startedAt.value = entry.startedAt; editForm.elements.note.value = entry.note; editDialog.showModal(); } });
-dialog.addEventListener('close', () => { if (dialog.returnValue === 'confirm' && pendingDeleteId) { const deleted = entries.find((entry) => entry.id === pendingDeleteId); if (deleted && commit(removeEntry(entries, pendingDeleteId))) { render(); offerUndo(deleted); } } pendingDeleteId = null; });
-document.querySelector('#cancel-edit').addEventListener('click', () => editDialog.close());
-editDialog.addEventListener('close', () => { pendingEditId = null; });
-editForm.addEventListener('submit', (event) => { event.preventDefault(); if (!pendingEditId) return; editError.hidden = true; const result = updateEntry(entries, pendingEditId, new FormData(editForm)); if (result.error) { editError.textContent = result.error; editError.hidden = false; return; } if (!commit(result.entries, editError)) return; render(); editDialog.close(); notify('Record updated.'); });
-exportButton.addEventListener('click', () => { const backup = new Blob([JSON.stringify(entries, null, 2)], { type: 'application/json' }); const link = document.createElement('a'); link.href = URL.createObjectURL(backup); link.download = `rooted-backup-${new Date().toISOString().slice(0, 10)}.json`; link.click(); URL.revokeObjectURL(link.href); notify(`${entries.length} records exported.`); });
-importInput.addEventListener('change', async () => { const file = importInput.files?.[0]; if (!file) return; try { const imported = JSON.parse(await file.text()); if (!isValidEntries(imported)) throw Error('invalid backup'); if (!confirm(`Replace your current ${entries.length} records with ${imported.length} imported records?`)) return; if (!commit(imported)) return; render(); notify(`${entries.length} records imported.`); } catch { notify('That file is not a valid Rooted backup.', true); } finally { importInput.value = ''; } });
+import { dateKey, daysUntil, dueDate, formatDate, makePlant, ordered, statusOf, validate } from './plant.js';
+import { loadPlants, savePlants } from './storage.js';
+const $ = (selector) => { const el = document.querySelector(selector); if (!el)
+    throw new Error(`Missing ${selector}`); return el; };
+const form = $('#plant-form'), list = $('#plant-list'), summary = $('#summary'), error = $('#form-error'), notices = $('#notices'), dialog = $('#delete-dialog'), submitButton = $('#submit-button'), cancelEdit = $('#edit-cancel'), lastWatered = $('#last-watered');
+let plants = [];
+let pendingDelete;
+let returnFocus;
+let editingId;
+function notice(message, kind = 'info') { const item = document.createElement('p'); item.className = `notice ${kind}`; item.textContent = message; notices.prepend(item); if (kind === 'info')
+    setTimeout(() => item.remove(), 4200); }
+function persist() { const message = savePlants(plants); if (message)
+    notice(message, 'error'); return message; }
+function label(status, days) { if (status === 'overdue')
+    return `${Math.abs(days)} day${Math.abs(days) === 1 ? '' : 's'} overdue`; if (status === 'today')
+    return 'Water today'; return `Due in ${days} days`; }
+function render() {
+    const counts = { overdue: 0, today: 0, upcoming: 0 };
+    plants.forEach(p => counts[statusOf(p)]++);
+    summary.innerHTML = `<strong>${plants.length}</strong> plants <span>·</span> <strong>${counts.overdue + counts.today}</strong> need attention`;
+    if (!plants.length) {
+        list.innerHTML = `<div class="empty"><span>✦</span><h3>Your shelf is waiting.</h3><p>Add your first plant and its rhythm will live here.</p></div>`;
+        list.setAttribute('aria-busy', 'false');
+        return;
+    }
+    list.innerHTML = ordered(plants).map(plant => { const status = statusOf(plant), days = daysUntil(plant), id = escapeAttr(plant.id); return `<article class="plant ${status}" data-id="${id}"><div class="plant-status"><span class="status-ring"></span><span>${label(status, days)}</span></div><div class="plant-main"><div><h3>${escapeHtml(plant.name)}</h3>${plant.nickname ? `<p class="nickname">${escapeHtml(plant.nickname)}</p>` : ''}</div><p class="interval">Every <b>${plant.frequency}</b> days</p></div>${plant.note ? `<p class="care-note">${escapeHtml(plant.note)}</p>` : ''}<div class="plant-footer"><p><span>Next water</span><strong>${formatDate(dueDate(plant))}</strong></p><div><button class="water-button" type="button" data-action="water" data-id="${id}">Water now <span>↗</span></button><button class="edit-button" type="button" data-action="edit" data-id="${id}">Edit</button><button class="icon-button" type="button" data-action="delete" data-id="${id}" aria-label="Remove ${escapeAttr(plant.name)}">×</button></div></div></article>`; }).join('');
+    list.setAttribute('aria-busy', 'false');
+}
+function escapeHtml(text) { const node = document.createElement('span'); node.textContent = text; return node.innerHTML; }
+function escapeAttr(text) { return escapeHtml(text).replace(/"/g, '&quot;'); }
+function resetForm() { editingId = undefined; form.reset(); $('#frequency').setAttribute('value', '7'); $('#note-count').textContent = '0'; submitButton.innerHTML = 'Add to collection <span>↗</span>'; cancelEdit.hidden = true; error.hidden = true; }
+function savePlant(input) { const invalid = validate(input); if (invalid) {
+    error.textContent = invalid;
+    error.hidden = false;
+    return;
+} const editing = plants.find(p => p.id === editingId); if (editing)
+    plants = plants.map(p => p.id === editing.id ? { ...p, ...input, name: input.name.trim(), nickname: input.nickname.trim(), note: input.note.trim(), lastWatered: input.lastWatered || p.lastWatered } : p);
+else
+    plants.push(makePlant(input)); const storageError = persist(); render(); if (storageError) {
+    error.textContent = `${storageError} This change is available until you close this tab.`;
+    error.hidden = false;
+}
+else {
+    notice(editing ? `${input.name.trim()} updated.` : `${input.name.trim()} is now on your care schedule.`);
+    resetForm();
+} }
+function startEdit(id) { const plant = plants.find(p => p.id === id); if (!plant)
+    return; editingId = id; $('#plant-name').value = plant.name; $('#nickname').value = plant.nickname; $('#frequency').value = String(plant.frequency); lastWatered.value = plant.lastWatered; $('#note').value = plant.note; $('#note-count').textContent = String(plant.note.length); submitButton.innerHTML = 'Save changes <span>↗</span>'; cancelEdit.hidden = false; error.hidden = true; $('#plant-name').focus(); }
+form.addEventListener('submit', event => { event.preventDefault(); const data = new FormData(form); savePlant({ name: String(data.get('name') ?? ''), nickname: String(data.get('nickname') ?? ''), frequency: Number(data.get('frequency')), note: String(data.get('note') ?? ''), lastWatered: String(data.get('lastWatered') ?? '') }); });
+cancelEdit.addEventListener('click', resetForm);
+$('#note').addEventListener('input', event => { $('#note-count').textContent = String(event.target.value.length); });
+list.addEventListener('click', event => { const button = event.target.closest('button[data-action]'); if (!button)
+    return; const id = button.dataset.id; if (button.dataset.action === 'water') {
+    const plant = plants.find(p => p.id === id);
+    if (!plant)
+        return;
+    plant.lastWatered = dateKey();
+    const storageError = persist();
+    render();
+    if (!storageError)
+        notice(`${plant.name} watered. Next up: ${formatDate(dueDate(plant))}.`);
+}
+else if (button.dataset.action === 'edit')
+    startEdit(id);
+else {
+    pendingDelete = id;
+    returnFocus = button;
+    const plant = plants.find(p => p.id === id);
+    $('#delete-copy').textContent = `This will permanently remove ${plant?.name ?? 'this plant'} from your collection.`;
+    dialog.showModal();
+} });
+dialog.addEventListener('close', () => { if (dialog.returnValue === 'confirm' && pendingDelete) {
+    const plant = plants.find(p => p.id === pendingDelete);
+    plants = plants.filter(p => p.id !== pendingDelete);
+    const storageError = persist();
+    render();
+    if (!storageError)
+        notice(`${plant?.name ?? 'Plant'} removed.`);
+} pendingDelete = undefined; returnFocus?.focus(); returnFocus = undefined; });
+$('#theme-toggle').addEventListener('click', event => { document.body.classList.toggle('night'); const button = event.currentTarget; const dark = document.body.classList.contains('night'); button.textContent = dark ? 'Day view' : 'Night view'; button.setAttribute('aria-pressed', String(dark)); });
+const loaded = loadPlants();
+plants = loaded.plants;
+lastWatered.max = dateKey();
+if (loaded.notice)
+    notice(loaded.notice, 'error');
+$('#today').textContent = new Intl.DateTimeFormat('en', { weekday: 'long', month: 'long', day: 'numeric' }).format(new Date());
+render();

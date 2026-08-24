@@ -1,53 +1,33 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="A calm, persistent home for every plant propagation." />
-  <title>Rooted — Plant propagation tracker</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1c3028"><title>Verdant — Plant care ledger</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css"><style>.form-actions{margin-top:25px}.form-actions .primary-button{margin-top:0}.form-actions .text-button{margin-top:10px}.edit-button{border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--ink);padding:8px 10px;font-size:10px}.edit-button:hover{border-color:var(--leaf);color:var(--leaf-deep)}</style>
 </head>
 <body>
-  <a class="skip-link" href="#collection">Skip to collection</a>
-  <main class="app-shell">
-    <header class="topbar">
-      <a class="brand" href="/" aria-label="Rooted home"><span class="brand-mark">⌁</span> rooted</a>
-      <p id="today" class="today"></p>
-    </header>
-    <section class="intro" aria-labelledby="page-title">
-      <div><p class="eyebrow">Propagation journal</p><h1 id="page-title">Tiny starts,<br><em>tracked with care.</em></h1></div>
-      <p class="intro-copy">A gentle place to follow each cutting from first snip to its next pot.</p>
+  <header class="topbar"><a class="brand" href="#plants" aria-label="Verdant home"><span class="brand-mark">✦</span>Verdant</a><p id="today" class="today"></p><button id="theme-toggle" class="text-button" type="button" aria-pressed="false">Night view</button></header>
+  <main>
+    <aside class="composer" aria-labelledby="add-heading"><div class="composer-inner">
+      <p class="eyebrow">Collection</p><h1 id="add-heading">Keep every<br><em>leaf</em> in rhythm.</h1><p class="intro">A small care ledger for the plants sharing your space.</p>
+      <form id="plant-form" novalidate>
+        <div class="field"><label for="plant-name">Plant name <b>*</b></label><input id="plant-name" name="name" maxlength="60" autocomplete="off" required placeholder="e.g. Monstera deliciosa"></div>
+        <div class="field"><label for="nickname">Nickname <span>optional</span></label><input id="nickname" name="nickname" maxlength="40" autocomplete="off" placeholder="e.g. The big one"></div>
+        <div class="field"><label for="frequency">Water every <b>*</b></label><div class="stepper"><input id="frequency" name="frequency" type="number" min="1" max="365" value="7" required><span>days</span></div></div>
+        <div class="field"><label for="last-watered">Last watered <span>optional · defaults to today</span></label><input id="last-watered" name="lastWatered" type="date"></div>
+        <div class="field"><label for="note">Care note <span>optional</span></label><textarea id="note" name="note" maxlength="140" rows="3" placeholder="Needs distilled water"></textarea><small><output id="note-count">0</output>/140</small></div>
+        <p id="form-error" class="form-error" role="alert" hidden></p><div class="form-actions"><button id="submit-button" class="primary-button" type="submit">Add to collection <span>↗</span></button><button id="edit-cancel" class="text-button" type="button" hidden>Cancel edit</button></div>
+      </form>
+      <p class="storage-note">Saved privately in this browser.</p>
+    </div></aside>
+    <section class="workspace" id="plants" aria-labelledby="plants-heading">
+      <div class="workspace-head"><div><p class="eyebrow">Care schedule</p><h2 id="plants-heading">Your plants</h2></div><div id="summary" class="summary" aria-live="polite"></div></div>
+      <div class="legend" aria-label="Watering status legend"><span><i class="dot urgent"></i>Overdue</span><span><i class="dot today-dot"></i>Today</span><span><i class="dot soon"></i>Upcoming</span></div>
+      <div id="plant-list" class="plant-list" aria-live="polite" aria-busy="true"><p class="loading">Loading your care schedule…</p></div>
     </section>
-    <section class="summary" aria-label="Propagation summary">
-      <div><span>Attempting</span><strong id="count-attempting">0</strong></div>
-      <div><span>Rooting</span><strong id="count-rooting">0</strong></div>
-      <div><span>Potted up</span><strong id="count-potted">0</strong></div>
-      <div><span>Failed</span><strong id="count-failed">0</strong></div>
-    </section>
-    <div class="workspace">
-      <aside class="composer" aria-labelledby="form-title">
-        <div class="composer-head"><p class="eyebrow">New record</p><h2 id="form-title">Add a cutting</h2></div>
-        <form id="entry-form" novalidate>
-          <label>Plant name <span aria-hidden="true">*</span><input id="name" name="name" maxlength="60" autocomplete="off" placeholder="e.g. Marble queen pothos" required /></label>
-          <label>Method <span aria-hidden="true">*</span><select id="method" name="method" required><option value="">Choose a method</option><option>Water</option><option>Soil</option><option>Air layering</option><option>Division</option><option>Leaf cutting</option><option>Other</option></select></label>
-          <label>Started <span aria-hidden="true">*</span><input id="startedAt" name="startedAt" type="date" required /></label>
-          <label>Note <span class="optional">optional</span><textarea id="note" name="note" maxlength="220" placeholder="Light, location, a tiny observation…"></textarea></label>
-          <p id="form-error" class="form-error" role="alert" hidden></p>
-          <button class="primary-button" type="submit"><span>+</span> Add to the bench</button>
-        </form>
-      </aside>
-      <section id="collection" class="collection" aria-labelledby="collection-title" tabindex="-1">
-        <div class="collection-head"><div><p class="eyebrow">Your collection</p><h2 id="collection-title">On the bench <span id="total-count">0</span></h2></div><div class="collection-tools"><div class="backup-actions" aria-label="Backup controls"><button id="export-data" class="text-button" type="button">Export</button><label class="text-button import-button">Import<input id="import-data" type="file" accept="application/json,.json" /></label></div><input id="search" class="search-input" type="search" placeholder="Search plants" aria-label="Search plants" /><label class="filter-label">Show <select id="filter" aria-label="Filter propagations"><option value="all">All stages</option><option value="attempting">Attempting</option><option value="rooting">Rooting</option><option value="potted">Potted up</option><option value="failed">Failed</option></select></label><label class="filter-label">Sort <select id="sort" aria-label="Sort propagations"><option value="newest">Newest</option><option value="oldest">Oldest</option><option value="name">Plant name</option><option value="status">Status</option></select></label><button id="clear-filters" class="text-button" type="button">Clear</button></div></div>
-        <div id="entries" class="entries" aria-live="polite" aria-busy="true"><div class="loading" role="status"><span aria-hidden="true">⌁</span> Preparing your bench…</div></div>
-      </section>
-    </div>
   </main>
-  <dialog id="delete-dialog" aria-labelledby="delete-title"><form method="dialog"><p class="eyebrow">Remove record</p><h2 id="delete-title">Remove this cutting?</h2><p id="delete-description">This can’t be undone.</p><div class="dialog-actions"><button value="cancel" class="secondary-button">Keep it</button><button id="confirm-delete" value="confirm" class="danger-button">Remove record</button></div></form></dialog>
-  <dialog id="edit-dialog" aria-labelledby="edit-title"><form id="edit-form" novalidate><p class="eyebrow">Update record</p><h2 id="edit-title">Edit cutting</h2><label>Plant name <span aria-hidden="true">*</span><input id="edit-name" name="name" maxlength="60" required /></label><label>Method <span aria-hidden="true">*</span><select id="edit-method" name="method" required><option>Water</option><option>Soil</option><option>Air layering</option><option>Division</option><option>Leaf cutting</option><option>Other</option></select></label><label>Started <span aria-hidden="true">*</span><input id="edit-startedAt" name="startedAt" type="date" required /></label><label>Note <span class="optional">optional</span><textarea id="edit-note" name="note" maxlength="220"></textarea></label><p id="edit-error" class="form-error" role="alert" hidden></p><div class="dialog-actions"><button id="cancel-edit" type="button" class="secondary-button">Cancel</button><button type="submit" class="primary-button">Save changes</button></div></form></dialog>
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <dialog id="delete-dialog" aria-labelledby="delete-title"><form method="dialog"><p class="eyebrow">Remove plant</p><h2 id="delete-title">Remove this plant?</h2><p id="delete-copy"></p><div class="dialog-actions"><button value="cancel" class="text-button">Keep it</button><button value="confirm" class="danger-button">Remove plant</button></div></form></dialog>
+  <section id="notices" class="notices" aria-label="Activity and alerts" aria-live="polite"></section>
   <script type="module" src="js/app.js"></script>
-</body>
-</html>
+</body></html>

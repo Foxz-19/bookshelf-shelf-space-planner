@@ -1,22 +1,35 @@
-import { STATUSES } from './types.js';
-import { isValidDate } from './utils.js';
-const KEY = 'rooted-propagations-v1';
-
-/** @param {unknown} value @returns {value is import('./types.js').Propagation[]} */
-export function isValidEntries(value) {
-  return Array.isArray(value) && value.every((entry) => entry && typeof entry.id === 'string' && /^[a-z0-9-]{8,}$/i.test(entry.id) && typeof entry.name === 'string' && typeof entry.method === 'string' && isValidDate(entry.startedAt) && STATUSES.includes(entry.status) && typeof entry.note === 'string' && typeof entry.createdAt === 'string');
+const KEY = 'verdant-plants-v1';
+const calendarKey = (value) => {
+    if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value))
+        return false;
+    const [year, month, day] = value.split('-').map(Number), date = new Date(`${value}T12:00:00`);
+    return date.getFullYear() === year && date.getMonth() + 1 === month && date.getDate() === day;
+};
+const valid = (value) => {
+    if (!value || typeof value !== 'object')
+        return false;
+    const plant = value;
+    return typeof plant.id === 'string' && plant.id.length > 0 && typeof plant.name === 'string' && plant.name.trim().length > 0 && plant.name.length <= 60 && typeof plant.nickname === 'string' && plant.nickname.length <= 40 && typeof plant.note === 'string' && plant.note.length <= 140 && Number.isInteger(plant.frequency) && plant.frequency >= 1 && plant.frequency <= 365 && calendarKey(plant.lastWatered) && typeof plant.createdAt === 'string';
+};
+export function loadPlants() {
+    try {
+        const raw = localStorage.getItem(KEY);
+        if (!raw)
+            return { plants: [] };
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed) || !parsed.every(valid)) {
+            localStorage.removeItem(KEY);
+            return { plants: [], notice: 'Saved plant data was unreadable and has been safely reset.' };
+        }
+        return { plants: parsed };
+    }
+    catch {
+        return { plants: [], notice: 'Plant storage is unavailable. Your changes may not persist.' };
+    }
 }
-/** @param {Storage} [storage=localStorage] @returns {{entries: import('./types.js').Propagation[], error: string|null}} */
-export function loadEntries(storage = localStorage) {
-  let raw;
-  try { raw = storage.getItem(KEY); } catch { return { entries: [], error: 'Your saved records could not be opened. You can still use Rooted this session.' }; }
-  if (!raw) return { entries: [], error: null };
-  try {
-    const parsed = JSON.parse(raw);
-    if (isValidEntries(parsed)) return { entries: parsed, error: null };
-  } catch { /* Corrupt JSON follows the same recovery path as an invalid saved shape. */ }
-  try { storage.removeItem(KEY); return { entries: [], error: 'Saved data was unreadable, so we started with a clean bench.' }; }
-  catch { return { entries: [], error: 'Saved data was unreadable, but could not be cleared. You can still use Rooted this session.' }; }
+export function savePlants(plants) { try {
+    localStorage.setItem(KEY, JSON.stringify(plants));
 }
-/** @param {import('./types.js').Propagation[]} entries @param {Storage} [storage=localStorage] @returns {{error:string|null}} */
-export function saveEntries(entries, storage = localStorage) { try { storage.setItem(KEY, JSON.stringify(entries)); return { error: null }; } catch { return { error: 'Changes could not be saved to this browser. Your records may disappear on refresh.' }; } }
+catch {
+    return 'Could not save changes to this browser. Please check storage permissions.';
+} }
