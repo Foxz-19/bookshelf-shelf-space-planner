@@ -19,5 +19,9 @@ goal.addEventListener('input', () => {
   render();
 });
 document.getElementById('reset')!.addEventListener('click', () => dialog.showModal());
+document.addEventListener('keydown', event => {
+  const isTyping = event.target instanceof Element && event.target.matches('input, textarea, select, [contenteditable="true"]');
+  if (event.key.toLowerCase() === 'r' && !event.ctrlKey && !event.metaKey && !event.altKey && !isTyping && !dialog.open) dialog.showModal();
+});
 dialog.addEventListener('close', () => { if (dialog.returnValue === 'confirm') { state = initialState(0); goal.value = '0'; goalError.textContent = ''; render(); showNotice('Week reset. All inputs are now zero.'); } });
 render();
