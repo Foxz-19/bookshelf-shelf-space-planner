@@ -3,6 +3,6 @@
   "private": true,
   "type": "module",
   "version": "1.0.0",
-  "scripts": { "build": "tsc", "test": "npm run build && node --test test/*.test.mjs", "start": "npx serve ." },
+  "scripts": { "build": "tsc", "test": "npm run build && node --test test/*.test.mjs", "test:e2e": "npm run build && python test/smoke.py", "start": "npx serve ." },
   "devDependencies": { "typescript": "^5.7.3" }
 }

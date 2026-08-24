@@ -1,9 +1,8 @@
 import type { Plant, PlantInput, Status } from './types.js';
 
 export const DAY = 86_400_000;
-/** Returns a timezone-safe local calendar key rather than a UTC instant. */
 export const dateKey = (date = new Date()): string => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-const validCalendarKey = (value: string): boolean => { if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false; const [year, month, day] = value.split('-').map(Number), date = new Date(`${value}T12:00:00`); return date.getFullYear() === year && date.getMonth() + 1 === month && date.getDate() === day; };
+export const validCalendarKey = (value: string): boolean => { if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false; const [year, month, day] = value.split('-').map(Number), date = new Date(`${value}T12:00:00`); return date.getFullYear() === year && date.getMonth() + 1 === month && date.getDate() === day; };
 export const addDays = (date: string, days: number): string => { const d = new Date(`${date}T12:00:00`); d.setDate(d.getDate() + days); return dateKey(d); };
 export const dueDate = (plant: Plant): string => addDays(plant.lastWatered, plant.frequency);
 export const statusOf = (plant: Plant, today = dateKey()): Status => dueDate(plant) < today ? 'overdue' : dueDate(plant) === today ? 'today' : 'upcoming';

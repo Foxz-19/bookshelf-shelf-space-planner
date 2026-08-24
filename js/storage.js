@@ -1,15 +1,10 @@
+import { validCalendarKey } from './plant.js';
 const KEY = 'verdant-plants-v1';
-const calendarKey = (value) => {
-    if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value))
-        return false;
-    const [year, month, day] = value.split('-').map(Number), date = new Date(`${value}T12:00:00`);
-    return date.getFullYear() === year && date.getMonth() + 1 === month && date.getDate() === day;
-};
 const valid = (value) => {
     if (!value || typeof value !== 'object')
         return false;
     const plant = value;
-    return typeof plant.id === 'string' && plant.id.length > 0 && typeof plant.name === 'string' && plant.name.trim().length > 0 && plant.name.length <= 60 && typeof plant.nickname === 'string' && plant.nickname.length <= 40 && typeof plant.note === 'string' && plant.note.length <= 140 && Number.isInteger(plant.frequency) && plant.frequency >= 1 && plant.frequency <= 365 && calendarKey(plant.lastWatered) && typeof plant.createdAt === 'string';
+    return typeof plant.id === 'string' && plant.id.length > 0 && typeof plant.name === 'string' && plant.name.trim().length > 0 && plant.name.length <= 60 && typeof plant.nickname === 'string' && plant.nickname.length <= 40 && typeof plant.note === 'string' && plant.note.length <= 140 && Number.isInteger(plant.frequency) && plant.frequency >= 1 && plant.frequency <= 365 && validCalendarKey(plant.lastWatered) && typeof plant.createdAt === 'string';
 };
 export function loadPlants() {
     try {

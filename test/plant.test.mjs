@@ -18,3 +18,7 @@ test('reports a storage write failure', () => {
   globalThis.localStorage = { getItem: () => null, removeItem: () => {}, setItem: () => { throw new Error('blocked'); } };
   assert.match(savePlants([plant]), /Could not save changes/);
 });
+test('reports a storage read failure', () => {
+  globalThis.localStorage = { getItem: () => { throw new Error('blocked'); }, removeItem: () => {}, setItem: () => {} };
+  assert.match(loadPlants().notice, /storage is unavailable/);
+});

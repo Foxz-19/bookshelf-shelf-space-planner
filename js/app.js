@@ -11,6 +11,8 @@ function notice(message, kind = 'info') { const item = document.createElement('p
     setTimeout(() => item.remove(), 4200); }
 function persist() { const message = savePlants(plants); if (message)
     notice(message, 'error'); return message; }
+function updatePlants(next) { const previous = plants; plants = next; const storageError = persist(); if (storageError)
+    plants = previous; render(); return storageError; }
 function label(status, days) { if (status === 'overdue')
     return `${Math.abs(days)} day${Math.abs(days) === 1 ? '' : 's'} overdue`; if (status === 'today')
     return 'Water today'; return `Due in ${days} days`; }
@@ -33,11 +35,8 @@ function savePlant(input) { const invalid = validate(input); if (invalid) {
     error.textContent = invalid;
     error.hidden = false;
     return;
-} const editing = plants.find(p => p.id === editingId); if (editing)
-    plants = plants.map(p => p.id === editing.id ? { ...p, ...input, name: input.name.trim(), nickname: input.nickname.trim(), note: input.note.trim(), lastWatered: input.lastWatered || p.lastWatered } : p);
-else
-    plants.push(makePlant(input)); const storageError = persist(); render(); if (storageError) {
-    error.textContent = `${storageError} This change is available until you close this tab.`;
+} const editing = plants.find(p => p.id === editingId), next = editing ? plants.map(p => p.id === editing.id ? { ...p, ...input, name: input.name.trim(), nickname: input.nickname.trim(), note: input.note.trim(), lastWatered: input.lastWatered || p.lastWatered } : p) : [...plants, makePlant(input)], storageError = updatePlants(next); if (storageError) {
+    error.textContent = storageError;
     error.hidden = false;
 }
 else {
@@ -45,7 +44,7 @@ else {
     resetForm();
 } }
 function startEdit(id) { const plant = plants.find(p => p.id === id); if (!plant)
-    return; editingId = id; $('#plant-name').value = plant.name; $('#nickname').value = plant.nickname; $('#frequency').value = String(plant.frequency); lastWatered.value = plant.lastWatered; $('#note').value = plant.note; $('#note-count').textContent = String(plant.note.length); submitButton.innerHTML = 'Save changes <span>↗</span>'; cancelEdit.hidden = false; error.hidden = true; $('#plant-name').focus(); }
+    return; editingId = id; $('#plant-name').value = plant.name; $('#nickname').value = plant.nickname; $('#frequency').value = String(plant.frequency); lastWatered.value = plant.lastWatered; $('#note').value = plant.note; $('#note-count').textContent = String(plant.note.length); submitButton.innerHTML = `Save ${escapeHtml(plant.name)} <span>↗</span>`; cancelEdit.hidden = false; error.hidden = true; $('#plant-name').focus(); }
 form.addEventListener('submit', event => { event.preventDefault(); const data = new FormData(form); savePlant({ name: String(data.get('name') ?? ''), nickname: String(data.get('nickname') ?? ''), frequency: Number(data.get('frequency')), note: String(data.get('note') ?? ''), lastWatered: String(data.get('lastWatered') ?? '') }); });
 cancelEdit.addEventListener('click', resetForm);
 $('#note').addEventListener('input', event => { $('#note-count').textContent = String(event.target.value.length); });
@@ -54,11 +53,9 @@ list.addEventListener('click', event => { const button = event.target.closest('b
     const plant = plants.find(p => p.id === id);
     if (!plant)
         return;
-    plant.lastWatered = dateKey();
-    const storageError = persist();
-    render();
+    const today = dateKey(), updated = { ...plant, lastWatered: today }, storageError = updatePlants(plants.map(p => p.id === id ? updated : p));
     if (!storageError)
-        notice(`${plant.name} watered. Next up: ${formatDate(dueDate(plant))}.`);
+        notice(`${plant.name} watered. Next up: ${formatDate(dueDate(updated))}.`);
 }
 else if (button.dataset.action === 'edit')
     startEdit(id);
@@ -70,12 +67,14 @@ else {
     dialog.showModal();
 } });
 dialog.addEventListener('close', () => { if (dialog.returnValue === 'confirm' && pendingDelete) {
-    const plant = plants.find(p => p.id === pendingDelete);
-    plants = plants.filter(p => p.id !== pendingDelete);
-    const storageError = persist();
-    render();
-    if (!storageError)
+    const plant = plants.find(p => p.id === pendingDelete), storageError = updatePlants(plants.filter(p => p.id !== pendingDelete));
+    if (!storageError) {
+        if (editingId === pendingDelete) {
+            resetForm();
+            returnFocus = $('#plant-name');
+        }
         notice(`${plant?.name ?? 'Plant'} removed.`);
+    }
 } pendingDelete = undefined; returnFocus?.focus(); returnFocus = undefined; });
 $('#theme-toggle').addEventListener('click', event => { document.body.classList.toggle('night'); const button = event.currentTarget; const dark = document.body.classList.contains('night'); button.textContent = dark ? 'Day view' : 'Night view'; button.setAttribute('aria-pressed', String(dark)); });
 const loaded = loadPlants();
