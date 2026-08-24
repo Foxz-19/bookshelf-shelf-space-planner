@@ -25,6 +25,7 @@ with sync_playwright() as p:
 
     page.locator('[data-action="status"]').select_option("rooting")
     assert page.locator("#count-rooting").inner_text() == "1"
+    assert "Moved to Rooting" in page.locator("#toast").inner_text()
     page.reload(wait_until="networkidle")
     assert page.get_by_text("Edited pothos", exact=True).count() == 1
     assert page.locator("#count-rooting").inner_text() == "1"
