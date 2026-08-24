@@ -26,7 +26,7 @@ try:
 
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(headless=True)
-        page = browser.new_page(viewport={"width": 1440, "height": 900})
+        page = browser.new_page(viewport={"width": 1366, "height": 768})
         page.goto("http://127.0.0.1:5173", wait_until="networkidle")
 
         require(page.locator(".day").count() == 7, "Expected all seven sleep rows")
