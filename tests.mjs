@@ -1,7 +1,0 @@
-import test from 'node:test';import assert from 'node:assert/strict';import {summary,validMeasurement} from './js/core.js';import {loadState} from './js/storage.js';
-test('coverage subtracts openings before applying coats',()=>{assert.deepEqual(summary({walls:[{width:12,height:8}],openings:[{width:3,height:7}],coats:2}),{paintable:150,exact:150/350,buy:1});});
-test('coverage never returns negative paintable area',()=>{assert.equal(summary({walls:[{width:2,height:2}],openings:[{width:9,height:9}],coats:1}).paintable,0);});
-test('measurements must be positive, finite, and bounded',()=>{assert.equal(validMeasurement(1,2),true);assert.equal(validMeasurement(0,2),false);assert.equal(validMeasurement(NaN,2),false);assert.equal(validMeasurement(10001,2),false);});
-test('malformed saved entries recover safely',()=>{globalThis.localStorage={getItem:()=>'{"walls":[{}],"openings":[],"coats":2}'};assert.equal(loadState().state.walls.length,0);});
-test('untrusted saved opening labels recover safely',()=>{globalThis.localStorage={getItem:()=>'{"walls":[],"openings":[{"width":1,"height":1,"type":"<script>"}],"coats":2}'};assert.equal(loadState().state.openings.length,0);});
-test('untrusted saved wall identity recovers safely',()=>{globalThis.localStorage={getItem:()=>'{"walls":[{"id":"<script>","width":1,"height":1}],"openings":[],"coats":2}'};assert.equal(loadState().state.walls.length,0);});

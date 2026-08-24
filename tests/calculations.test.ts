@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { balanceMessage, clampHours, cleanGoal, totals } from '../src/calculations';
+import { DAYS, type SleepState } from '../src/types';
+const state = (goal: number, value: number): SleepState => ({ goal, hours: Object.fromEntries(DAYS.map(day => [day, value])) as SleepState['hours'] });
+test('clamps invalid sleep entries to a safe daily range', () => { assert.equal(clampHours(-2), 0); assert.equal(clampHours(30), 24); assert.equal(clampHours(NaN), 0); });
+test('clamps an invalid sleep goal before it reaches calculations', () => { assert.equal(cleanGoal(-1), 0); assert.equal(cleanGoal(30), 24); assert.equal(cleanGoal(NaN), 0); });
+test('calculates weekly deficit and completion', () => { const result = totals(state(8, 7)); assert.equal(result.difference, -7); assert.equal(result.progress, 87.5); });
+test('reports zero progress instead of a false completion when there is no goal', () => { const result = totals(state(0, 0)); assert.equal(result.target, 0); assert.equal(result.progress, 0); });
+test('uses clear singular and plural recovery messages', () => { assert.equal(balanceMessage(-1), 'You owe yourself 1 hour of sleep'); assert.match(balanceMessage(2), /ahead by 2 hours/); });

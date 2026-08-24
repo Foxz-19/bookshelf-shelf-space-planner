@@ -1,30 +1,34 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Roller Paint Calculator</title><link rel="stylesheet" href="styles.css" />
-</head>
-<body>
-  <header><a class="brand" href="#calculator">roller<span>.</span></a><button class="text-button" id="reset-plan" type="button">Reset plan</button><p id="save-status">Paint coverage calculator</p></header>
-  <main id="calculator">
-    <section class="intro"><p class="eyebrow">Weekend project planner</p><h1>Buy the right<br><em>amount</em> of paint.</h1><p>Measure each wall, subtract openings, and get a dependable shopping number.</p><ol class="workflow" aria-label="How it works"><li><b>01</b> Measure each wall</li><li><b>02</b> Remove doors and windows</li><li><b>03</b> Buy with confidence</li></ol></section>
-    <section class="workspace" aria-label="Paint calculator">
-      <form id="wall-form" class="entry" novalidate>
-        <div class="section-head"><div><p class="eyebrow">01 / Walls</p><h2>Add a wall</h2></div><span id="wall-count">0 of 6</span></div>
-        <div class="fields"><label>Width <span>ft</span><input id="wall-width" name="width" type="number" min="0.1" max="10000" step="0.1" inputmode="decimal" required></label><label>Height <span>ft</span><input id="wall-height" name="height" type="number" min="0.1" max="10000" step="0.1" inputmode="decimal" required></label><button type="submit">Add wall <span aria-hidden="true">→</span></button></div>
-        <p class="field-message" id="wall-error" aria-live="polite"></p><p class="live-note" id="live-note" aria-live="polite"></p>
-      </form>
-      <div class="wall-list-wrap"><div class="list-title"><h2>Your walls</h2><button class="text-button" id="clear-walls" type="button">Clear all</button></div><ul id="wall-list" class="wall-list" aria-live="polite"></ul></div>
-      <form id="opening-form" class="entry opening" novalidate>
-        <div class="section-head"><div><p class="eyebrow">02 / Openings</p><h2>Subtract doors & windows</h2></div><span>Optional</span><button class="text-button" id="clear-openings" type="button">Clear openings</button></div>
-        <div class="fields opening-fields"><label>Type<select id="opening-type" name="type"><option>Door</option><option>Window</option><option>Other opening</option></select></label><label>Width <span>ft</span><input id="opening-width" name="width" type="number" min="0.1" max="10000" step="0.1" required></label><label>Height <span>ft</span><input id="opening-height" name="height" type="number" min="0.1" max="10000" step="0.1" required></label><button type="submit">Subtract <span aria-hidden="true">−</span></button></div>
-        <p class="field-message" id="opening-error" aria-live="polite"></p><p class="opening-summary" id="opening-summary"></p><ul id="opening-list" class="opening-list" aria-live="polite"></ul>
-      </form>
-      <section class="coats" aria-labelledby="coat-title"><div><p class="eyebrow">03 / Coats</p><h2 id="coat-title">How many coats?</h2></div><div class="stepper"><button type="button" data-coat-change="-1" aria-label="Use one less coat">−</button><output id="coat-count" aria-live="polite">2</output><button type="button" data-coat-change="1" aria-label="Use one more coat">+</button></div></section>
-    </section>
-    <aside class="result" aria-labelledby="result-title"><p class="eyebrow">Your paint plan</p><h2 id="result-title">Coverage<br>summary</h2><p id="plan-status" class="plan-status" aria-live="polite">Add a wall to begin your plan.</p><dl><div><dt>Paintable area</dt><dd><strong id="area-result">0</strong> sq ft</dd></div><div><dt>Exact paint needed</dt><dd><strong id="exact-result">0.00</strong> gallons</dd></div></dl><div class="buy"><span>Gallons to buy</span><strong id="buy-result">0</strong><small>rounded up for full coverage</small></div><p class="coverage-note">Based on standard coverage of 350 sq ft per gallon.</p></aside>
-  </main>
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <dialog id="confirm-dialog" aria-labelledby="dialog-title"><form method="dialog"><p class="eyebrow">Confirm action</p><h2 id="dialog-title">Remove this item?</h2><p id="dialog-message"></p><div><button value="cancel" class="secondary">Keep it</button><button value="confirm" class="danger">Continue</button></div></form></dialog>
-  <script type="module" src="js/app.js"></script>
-</body></html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#10231f" />
+    <title>Rest Ledger — Sleep debt calculator</title>
+  </head>
+  <body>
+    <main class="app" aria-labelledby="page-title">
+      <header>
+        <p class="eyebrow">WEEKLY RECOVERY TRACKER</p>
+        <div class="title-row"><h1 id="page-title">Rest ledger</h1><button class="reset" id="reset" type="button">Reset week</button></div>
+        <p class="intro">A clear view of the sleep you have banked — and the sleep you still owe yourself.</p>
+      </header>
+      <section class="goal-bar" aria-label="Sleep goal settings">
+        <div><span class="goal-label">Nightly sleep goal</span><span class="goal-note">Applied to every day</span></div>
+        <div><label class="goal-input"> <span class="visually-hidden">Hours of sleep goal per night</span><input id="goal" type="number" min="0" max="24" step="0.5" value="8" inputmode="decimal" aria-describedby="goal-error" /><span>hrs</span></label><p id="goal-error" class="input-error" role="alert"></p></div>
+      </section>
+      <section class="week" aria-labelledby="week-title">
+        <div class="table-head"><h2 id="week-title">This week</h2><span>Hours slept</span><span>Difference</span></div>
+        <div id="days" class="days"></div>
+      </section>
+      <section class="summary" aria-live="polite" aria-atomic="true" aria-labelledby="summary-title">
+        <div class="summary-copy"><p class="eyebrow" id="summary-title">WEEKLY BALANCE</p><output id="message">Add your sleep to begin</output></div>
+        <div class="ring" id="ring" role="img" aria-label="0 percent of weekly sleep goal reached"><strong id="percent">0%</strong><span>of goal</span></div>
+        <div class="progress-wrap"><div class="progress-label"><span id="progressText">0 of 56 hours</span><span id="remaining">56 hrs to goal</span></div><div class="track"><div id="progress" class="progress"></div></div></div>
+      </section>
+      <p id="notice" class="notice" role="status" aria-live="polite"></p>
+    </main>
+    <dialog id="confirm"><form method="dialog"><h2>Reset this week?</h2><p>This will clear every sleep entry back to zero.</p><div class="dialog-actions"><button value="cancel">Keep entries</button><button class="danger" value="confirm">Reset week</button></div></form></dialog>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
