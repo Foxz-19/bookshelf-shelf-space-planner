@@ -375,6 +375,13 @@ fieldset {
   margin: 0;
   max-width: 18rem;
 }
+.diagram-caption {
+  margin: -0.4rem 0 0.75rem;
+  color: var(--muted);
+  font:
+    500 0.7rem "DM Mono",
+    monospace;
+}
 .shop-tip {
   align-self: end;
   margin: 0.75rem 0 0;

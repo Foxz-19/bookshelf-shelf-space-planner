@@ -51,6 +51,7 @@ try:
         page.locator("[data-step='1']").click()
         require(page.locator("#people").input_value() == "20", "increment button is not live")
         page.locator("#copy-plan").click()
+        page.wait_for_function("document.querySelector('#copy-status').textContent.trim().length > 0")
         require(page.locator("#copy-status").inner_text(), "copy feedback is absent")
         require(not errors, f"browser console errors: {errors}")
         mobile = browser.new_page(viewport={"width": 390, "height": 844})
