@@ -3,75 +3,39 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#f7b93e" />
-    <title>Blanket, Please — Picnic Size Planner</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,500;9..40,700;9..40,800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="./styles.css" />
+    <meta name="theme-color" content="#f7f4ec" />
+    <title>Doze — Nap duration planner</title>
   </head>
   <body>
-    <a class="skip-link" href="#planner">Skip to picnic planner</a>
-    <main id="planner" class="planner">
+    <main class="shell">
       <header class="masthead">
-        <p class="eyebrow">Park day utility</p>
-        <h1>Blanket,<br /><em>please.</em></h1>
-        <p class="intro">A little room for everyone, every snack, and a truly excellent afternoon.</p>
+        <a class="wordmark" href="/" aria-label="Doze home">doze<span>·</span></a>
+        <p>nap duration planner</p>
       </header>
-
-      <section class="controls" aria-labelledby="preferences-title">
-        <h2 id="preferences-title">Your picnic</h2>
-        <label for="people">How many people?</label>
-        <div class="stepper">
-          <button type="button" data-step="-1" aria-label="One fewer person">−</button>
-          <input id="people" name="people" type="number" min="1" max="20" value="4" inputmode="numeric" autocomplete="off" aria-describedby="people-help" />
-          <button type="button" data-step="1" aria-label="One more person">+</button>
-        </div>
-        <p id="people-help" class="helper">Between 1 and 20 people</p>
-
-        <fieldset>
-          <legend>How close are we sitting?</legend>
-          <div class="segmented">
-            <input id="cozy" name="style" type="radio" value="cozy" autocomplete="off" />
-            <label for="cozy">Cozy <small>close-knit</small></label>
-            <input id="comfortable" name="style" type="radio" value="comfortable" autocomplete="off" checked />
-            <label for="comfortable">Comfortable <small>just right</small></label>
-            <input id="sprawled" name="style" type="radio" value="sprawled" autocomplete="off" />
-            <label for="sprawled">Sprawled <small>lots of room</small></label>
-          </div>
-          <p class="style-guide">For lounging, choose sprawled.</p>
-        </fieldset>
-
-        <div class="toggle-row">
-          <div><strong>Bringing a cooler or bag?</strong><span>We’ll make room for it.</span></div>
-          <label class="switch"><input id="gear" name="gear" type="checkbox" autocomplete="off" /><span></span><b class="sr-only">Include space for a cooler or bag</b></label>
-        </div>
+      <section class="intro" aria-labelledby="page-title">
+        <p class="eyebrow">A softer afternoon</p>
+        <h1 id="page-title">Wake up on<br /><em>your own terms.</em></h1>
+        <p class="lede">Find the best little pocket of sleep before your next thing.</p>
       </section>
-
-      <section class="result" aria-labelledby="result-title">
-        <div class="result-head">
-          <p class="eyebrow">Recommended blanket</p>
-          <h2 id="result-title"><span id="feet">7 × 8 ft</span></h2>
-          <p id="meters" class="metric">2.1 × 2.4 m</p>
-          <p id="plan-details" class="plan-details">4 people · Comfortable · No extra gear</p>
-        </div>
-        <div class="lawn" aria-label="Top-down picnic blanket diagram">
-          <span class="sun" aria-hidden="true">✦</span>
-          <div id="blanket" class="blanket" role="img" aria-label="Blanket with four people seated on it">
-            <div id="people-icons" class="people-icons"></div>
-            <span id="bag" class="bag" hidden aria-label="Cooler or bag">▰</span>
+      <section class="planner" aria-labelledby="planner-title">
+        <div class="planner-heading"><h2 id="planner-title">Plan your doze</h2><div class="planner-tools"><label class="format-label">Time format <select id="time-format" aria-label="Alarm time format"><option value="12h">12-hour</option><option value="24h">24-hour</option></select></label><button id="refresh-now" class="quiet" type="button">Use current time</button><span id="window" aria-live="polite">Choose a wake-up time</span></div></div>
+        <form id="planner-form" novalidate>
+          <div class="time-fields">
+            <label>It’s now <input id="now" name="now" type="time" required aria-describedby="time-help" /></label>
+            <span class="arrow" aria-hidden="true">→</span>
+            <label>Wake me at <input id="wake" name="wake" type="time" required aria-describedby="time-help" /></label>
           </div>
-          <span class="flower flower-a" aria-hidden="true">✿</span><span class="flower flower-b" aria-hidden="true">✽</span>
-        </div>
-        <p class="diagram-caption">Each icon = 1 person · ▰ = cooler or bag</p>
-        <p id="comparison" class="comparison" aria-live="polite">About the size of a queen bed.</p>
-        <p id="shop-tip" class="shop-tip">Look for a blanket at least 7 × 7 ft.</p>
-        <button id="copy-plan" class="copy-plan" type="button">Copy picnic plan</button>
-        <p id="copy-status" class="copy-status" aria-live="polite"></p>
-        <p id="status" class="sr-only" aria-live="polite"></p>
+          <p id="time-help" class="hint">If your wake-up time has passed, we’ll treat it as tomorrow.</p>
+          <p id="form-error" class="form-error" role="alert"></p>
+          <button id="plan" type="submit">Find my perfect nap <span aria-hidden="true">↗</span></button>
+        </form>
       </section>
+      <section id="results" class="results" aria-live="polite" aria-label="Nap recommendations" aria-busy="false">
+        <div class="empty"><span aria-hidden="true">☾</span><p>Set your times, then let the math do the dreaming.</p></div>
+      </section>
+      <footer><span>Made for the in-between hours.</span><span id="clock-status">Using your local time</span></footer>
     </main>
-    <footer>Made for grass stains and good company.</footer>
-    <script type="module" src="./js/app.js"></script>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
