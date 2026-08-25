@@ -19,7 +19,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
 const date = new Date(); now.value = `${pad(date.getHours())}:${pad(date.getMinutes())}`;
 function setCurrentTime(): void { const current = new Date(); now.value = `${pad(current.getHours())}:${pad(current.getMinutes())}`; clockStatus.textContent = 'Current time refreshed'; onTimeInput(); }
 function clearError(): void { error.textContent = ''; }
-function updateWindow(): void { const a = parseTime(now.value), b = parseTime(wake.value); if (a !== null && b !== null) { const tomorrow = b < a; windowText.textContent = `${readableMinutes(tomorrow ? b - a + 1440 : b - a)} available${tomorrow ? ' · tomorrow' : ''}`; } }
+function updateWindow(): void { const a = parseTime(now.value), b = parseTime(wake.value); if (a === null || b === null) { windowText.textContent = 'Choose a wake-up time'; return; } const tomorrow = b < a; windowText.textContent = `${readableMinutes(tomorrow ? b - a + 1440 : b - a)} available${tomorrow ? ' · tomorrow' : ''}`; }
 function selectedFormat(): TimeFormat { return timeFormat.value === '24h' ? '24h' : '12h'; }
 function setPlanning(active: boolean): void {
   planButton.disabled = active; planButton.textContent = active ? 'Finding your nap…' : 'Find my perfect nap ↗'; results.setAttribute('aria-busy', String(active));

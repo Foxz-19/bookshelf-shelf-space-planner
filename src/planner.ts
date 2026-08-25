@@ -8,6 +8,6 @@ export function createPlan(now: number, wake: number): Plan {
   const power = Math.min(20, available);
   options.push(make('Power Nap', power, now, 'A quick reset. You should wake up clear, not groggy.'));
   if (available >= 90) options.push(make('Sleep Cycle Nap', 90, now, 'One full cycle for a properly rested feeling.', true));
-  if (available !== power && available !== 90) options.push(make('Full Nap', available, now, 'Use every quiet minute you have. Wake when you need to.'));
+  options.push(make('Full Nap', available, now, 'Use every quiet minute you have. Wake when you need to.'));
   return { available, options };
 }
