@@ -1,5 +1,6 @@
-# Project instructions and generated assessment reports
-*.md
-*.txt
-!requirements-dev.txt
+# Generated dependencies, build output, and browser-test artifacts
 node_modules/
+dist/
+playwright-report/
+test-results/
+package-lock.json
