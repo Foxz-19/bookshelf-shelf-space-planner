@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import { calculateBlanket } from './calculator.js';
+const cozy = calculateBlanket({ people: 1, style: 'cozy', gear: false });
+const roomy = calculateBlanket({ people: 20, style: 'sprawled', gear: true });
+assert.ok(cozy.width * cozy.length >= 9);
+assert.ok(roomy.width * roomy.length >= 329);
+assert.equal(calculateBlanket({ people: 0, style: 'comfortable', gear: false }).width >= 1, true);
+assert.ok(calculateBlanket({ people: 4, style: 'cozy', gear: false }).width * calculateBlanket({ people: 4, style: 'cozy', gear: false }).length < calculateBlanket({ people: 4, style: 'sprawled', gear: false }).width * calculateBlanket({ people: 4, style: 'sprawled', gear: false }).length);
+assert.ok(calculateBlanket({ people: 4, style: 'comfortable', gear: true }).width * calculateBlanket({ people: 4, style: 'comfortable', gear: true }).length > calculateBlanket({ people: 4, style: 'comfortable', gear: false }).width * calculateBlanket({ people: 4, style: 'comfortable', gear: false }).length);
+assert.ok(calculateBlanket({ people: 1, style: 'comfortable', gear: false }).width <= calculateBlanket({ people: 1, style: 'comfortable', gear: false }).length);
+console.log('calculator tests passed');

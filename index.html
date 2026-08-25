@@ -1,1 +1,71 @@
-<!doctype html><html lang="en"><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#101719"><title>Fuelway — Road Trip Fuel Planner</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="./styles.css"><link rel="stylesheet" href="./theme.css"><main class="shell"><section class="intro" aria-labelledby="app-title"><a class="brand" href="#app-title" aria-label="Fuelway home"><span class="brand-mark">F</span> fuelway</a><p class="eyebrow">Road trip fuel planner<h1 id="app-title">Know the road<br><em>before you go.</em></h1><p class="lede">Set your route and vehicle details. Your practical fuel plan updates as you type.<div class="road-art" aria-hidden="true"><span></span><i></i><b></b></div><p class="buffer-note"><span>10%</span> reserve is held back at every fill-up.</section><section class="workspace" aria-label="Trip fuel calculator"><header class="workspace-head"><div><p class="eyebrow">Trip details<h2>Your route</h2></div><div class="unit-switch" role="group" aria-label="Measurement units"><button type="button" data-unit="imperial" aria-pressed="true">Miles / gal</button> <button type="button" data-unit="metric" aria-pressed="false">Km / L</button></div></header><form id="trip-form" novalidate><div class="fields"><label>Vehicle preset <select id="vehicle" name="vehicle"><option value="custom">Custom vehicle<option value="compact">Compact car<option value="suv">SUV<option value="hybrid">Hybrid</select></label> <label>Trip distance <span id="distance-unit">miles</span><input id="distance" name="distance" inputmode="decimal" type="number" min="0" step="any" value="480" autocomplete="off"></label> <label>Fuel efficiency <span id="efficiency-unit">mpg</span><input id="efficiency" name="efficiency" inputmode="decimal" type="number" min="0" step="any" value="28" autocomplete="off"></label> <label>Tank size <span id="tank-unit">gallons</span><input id="tank" name="tank" inputmode="decimal" type="number" min="0" step="any" value="14" autocomplete="off"></label> <label>Fuel price <span id="price-unit">USD / gallon</span><input id="price" name="price" inputmode="decimal" type="number" min="0" step="any" value="3.59" autocomplete="off"></label> <label>Currency <select id="currency" name="currency"><option value="USD">USD — US dollar<option value="EUR">EUR — euro<option value="IDR">IDR — Indonesian rupiah</select></label></div><div class="start-level"><div><label for="start">Starting tank level</label><p>How full are you leaving?</div><output id="start-output" for="start">75%</output><input id="start" name="start" type="range" min="0" max="100" value="75"></div><p id="form-message" class="form-message" aria-live="polite"><p id="save-message" class="form-message save-message" aria-live="polite"></form><section class="results" aria-labelledby="results-title" aria-live="polite"><div class="results-head"><p class="eyebrow">Your fuel plan<h2 id="results-title">The useful numbers</h2><span id="plan-status" class="status">Live</span></div><div class="result-grid"><article class="result primary"><p>Fuel stops</p><strong id="stops">—</strong><span id="stops-detail">Add trip details</span></article><article class="result"><p>Total fuel cost</p><strong id="cost">—</strong><span id="fuel-detail">For the whole trip</span></article><article class="result wide"><p>Distance between stops</p><strong id="range">—</strong><span id="range-detail">Based on your 10% reserve</span></article></div><div class="route-scale" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div><p class="fuel-required">Fuel required <strong id="fuel-required-value">—</strong><div class="plan-actions"><button id="share" type="button">Share plan</button><button id="print" type="button">Print plan</button></div><p class="fine-print">Estimate assumes a steady fuel efficiency and refuelling when the tank reaches the 10% reserve. Actual range varies with driving conditions.</section></section></main><div id="toast" class="toast" role="status" aria-live="polite" hidden></div><script type="module" src="./src/main.js"></script>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f7b93e" />
+    <title>Blanket, Please — Picnic Size Planner</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,500;9..40,700;9..40,800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#planner">Skip to picnic planner</a>
+    <main id="planner" class="planner">
+      <header class="masthead">
+        <p class="eyebrow">Park day utility</p>
+        <h1>Blanket,<br /><em>please.</em></h1>
+        <p class="intro">A little room for everyone, every snack, and a truly excellent afternoon.</p>
+      </header>
+
+      <section class="controls" aria-labelledby="preferences-title">
+        <h2 id="preferences-title">Your picnic</h2>
+        <label for="people">How many people?</label>
+        <div class="stepper">
+          <button type="button" data-step="-1" aria-label="One fewer person">−</button>
+          <input id="people" name="people" type="number" min="1" max="20" value="4" inputmode="numeric" autocomplete="off" aria-describedby="people-help" />
+          <button type="button" data-step="1" aria-label="One more person">+</button>
+        </div>
+        <p id="people-help" class="helper">Between 1 and 20 people</p>
+
+        <fieldset>
+          <legend>How close are we sitting?</legend>
+          <div class="segmented">
+            <input id="cozy" name="style" type="radio" value="cozy" autocomplete="off" />
+            <label for="cozy">Cozy <small>close-knit</small></label>
+            <input id="comfortable" name="style" type="radio" value="comfortable" autocomplete="off" checked />
+            <label for="comfortable">Comfortable <small>just right</small></label>
+            <input id="sprawled" name="style" type="radio" value="sprawled" autocomplete="off" />
+            <label for="sprawled">Sprawled <small>lots of room</small></label>
+          </div>
+        </fieldset>
+
+        <div class="toggle-row">
+          <div><strong>Bringing a cooler or bag?</strong><span>We’ll make room for it.</span></div>
+          <label class="switch"><input id="gear" name="gear" type="checkbox" autocomplete="off" /><span></span><b class="sr-only">Include space for a cooler or bag</b></label>
+        </div>
+      </section>
+
+      <section class="result" aria-labelledby="result-title">
+        <div class="result-head">
+          <p class="eyebrow">Recommended blanket</p>
+          <h2 id="result-title"><span id="feet">7 × 8 ft</span></h2>
+          <p id="meters" class="metric">2.1 × 2.4 m</p>
+        </div>
+        <div class="lawn" aria-label="Top-down picnic blanket diagram">
+          <span class="sun" aria-hidden="true">✦</span>
+          <div id="blanket" class="blanket" role="img" aria-label="Blanket with four people seated on it">
+            <div id="people-icons" class="people-icons"></div>
+            <span id="bag" class="bag" hidden aria-label="Cooler or bag">▰</span>
+          </div>
+          <span class="flower flower-a" aria-hidden="true">✿</span><span class="flower flower-b" aria-hidden="true">✽</span>
+        </div>
+        <p id="comparison" class="comparison" aria-live="polite">About the size of a queen bed.</p>
+        <p id="status" class="sr-only" aria-live="polite"></p>
+      </section>
+    </main>
+    <footer>Made for grass stains and good company.</footer>
+    <script type="module" src="./js/app.js"></script>
+  </body>
+</html>
