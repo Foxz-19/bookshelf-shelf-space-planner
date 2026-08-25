@@ -1,3 +1,4 @@
 # Project instructions and generated assessment reports
 *.md
 *.txt
+node_modules/

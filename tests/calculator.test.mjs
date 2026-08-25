@@ -18,6 +18,6 @@ assert.equal(Math.round(calculatePlan(metric).range),568);
 assert.deepEqual(convertTripUnit({...base,efficiency:0},'metric'),{...base,efficiency:0,unit:'metric'});
 let stored='';globalThis.localStorage={setItem:(_,value)=>stored=value,getItem:()=>stored};
 assert.equal(saveTrip(base),null);assert.deepEqual(loadTrip(),{trip:base,error:null});stored='{';assert.equal(loadTrip().error,'Saved trip data could not be accessed; changes will stay in this session.');
+globalThis.localStorage={setItem(){throw 0},getItem(){return null}};assert.match(saveTrip(base),/could not be saved/);
 const nodes=Object.fromEntries('start-output form-message stops cost range fuel-required-value stops-detail fuel-detail range-detail plan-status distance efficiency tank price start currency distance-unit efficiency-unit tank-unit price-unit save-message toast'.split(' ').map(id=>[id,{textContent:'',value:'',setAttribute(){}}]));
 const ui=createUI({getElementById:id=>nodes[id],querySelectorAll:()=>[{dataset:{unit:'imperial'},setAttribute(){}}]});ui.setInputs(base);ui.render(base,plan,null);assert.equal(nodes.stops.textContent,'1');assert.match(nodes.cost.textContent,/61\.54/);ui.render(base,null,'Invalid');assert.equal(nodes['form-message'].textContent,'Invalid');assert.equal(nodes.range.textContent,'—');
-console.log('calculator tests passed');
