@@ -12,4 +12,5 @@ export interface BlanketPlan {
   metersWidth: string;
   metersLength: string;
   comparison: string;
+  shopSize: string;
 }

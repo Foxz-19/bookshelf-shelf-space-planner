@@ -7,12 +7,13 @@ const styles = { cozy: 9, comfortable: 12, sprawled: 16 };
 /** @type {Array<[number, string]>} */
 const comparisons = [
   [19, 'A compact solo blanket.'],
-  [20, 'About the size of a twin bed.'],
-  [38, 'About the size of a full bed.'],
-  [55, 'About the size of a queen bed.'],
-  [76, 'About the size of a king bed.'],
+  [25, 'About the size of a twin bed.'],
+  [32, 'About the size of a full bed.'],
+  [42, 'About the size of a queen bed.'],
+  [56, 'About the size of a king bed.'],
   [Infinity, 'Bigger than a king bed — bring the whole crew.'],
 ];
+const commonSizes = [[5, 7], [6, 8], [8, 8], [8, 10], [9, 12], [10, 12], [12, 15], [15, 20]];
 
 /** Calculate a practical rectangular blanket, rounded to whole feet. @param {PicnicInput} input @returns {BlanketPlan} */
 export function calculateBlanket({ people, style, gear }) {
@@ -22,6 +23,7 @@ export function calculateBlanket({ people, style, gear }) {
   const sideB = Math.ceil(area / sideA);
   const width = Math.min(sideA, sideB);
   const length = Math.max(sideA, sideB);
-  const comparison = comparisons.find(([max]) => width * length <= max)[1];
-  return { width, length, metersWidth: (width * 0.3048).toFixed(1), metersLength: (length * 0.3048).toFixed(1), comparison };
+  const comparison = comparisons.find(([max]) => width * length <= max)?.[1] ?? 'Bigger than a king bed — bring the whole crew.';
+  const [shopWidth, shopLength] = commonSizes.find(([w, l]) => w >= width && l >= length) ?? [width, length];
+  return { width, length, metersWidth: (width * 0.3048).toFixed(1), metersLength: (length * 0.3048).toFixed(1), comparison, shopSize: `${shopWidth} × ${shopLength} ft` };
 }

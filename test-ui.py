@@ -39,6 +39,8 @@ try:
                     require(page.locator("#bag").evaluate("node => node.hidden") == (not gear), "cooler diagram state is wrong")
                     require("ft" in page.locator("#feet").inner_text(), "feet output is absent")
                     require("m" in page.locator("#meters").inner_text(), "metres output is absent")
+                    require(str(people) in page.locator("#plan-details").inner_text(), "live plan summary is absent")
+                    require("Closest common choice" in page.locator("#shop-tip").inner_text(), "shopping guidance is absent")
 
         page.locator("#people").fill("0")
         require(page.locator("#people").input_value() == "1", "lower limit is not enforced")
@@ -48,7 +50,14 @@ try:
         require(page.locator("#people").input_value() == "19", "decrement button is not live")
         page.locator("[data-step='1']").click()
         require(page.locator("#people").input_value() == "20", "increment button is not live")
+        page.locator("#copy-plan").click()
+        require(page.locator("#copy-status").inner_text(), "copy feedback is absent")
         require(not errors, f"browser console errors: {errors}")
+        mobile = browser.new_page(viewport={"width": 390, "height": 844})
+        mobile.goto(f"http://127.0.0.1:{server.server_port}", wait_until="domcontentloaded")
+        mobile.locator("#people").wait_for()
+        require(mobile.evaluate("document.documentElement.scrollWidth <= window.innerWidth"), "mobile layout overflows horizontally")
+        mobile.close()
         browser.close()
 finally:
     server.shutdown()

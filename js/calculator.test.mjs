@@ -9,4 +9,5 @@ assert.ok(calculateBlanket({ people: 4, style: 'cozy', gear: false }).width * ca
 assert.ok(calculateBlanket({ people: 4, style: 'comfortable', gear: true }).width * calculateBlanket({ people: 4, style: 'comfortable', gear: true }).length > calculateBlanket({ people: 4, style: 'comfortable', gear: false }).width * calculateBlanket({ people: 4, style: 'comfortable', gear: false }).length);
 assert.ok(calculateBlanket({ people: 1, style: 'comfortable', gear: false }).width <= calculateBlanket({ people: 1, style: 'comfortable', gear: false }).length);
 assert.equal(calculateBlanket({ people: 1, style: 'cozy', gear: false }).comparison, 'A compact solo blanket.');
+assert.equal(calculateBlanket({ people: 4, style: 'comfortable', gear: false }).shopSize, '8 × 8 ft');
 console.log('calculator tests passed');

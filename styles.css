@@ -14,6 +14,10 @@
   --sun: #f6b93c;
   --coral: #f47b59;
   --pink: #eea4a7;
+  --muted: #547466;
+  --light-leaf: #d8eed5;
+  --switch-off: #d9e2c3;
+  --white: #fff;
   --line: rgba(23, 56, 47, 0.16);
   --space: clamp(1.1rem, 3vw, 2.6rem);
   font-family: "DM Sans", sans-serif;
@@ -141,7 +145,7 @@ input:focus-visible + label,
 .helper {
   font-size: 0.76rem;
   margin: 0;
-  color: #547466;
+  color: var(--muted);
 }
 fieldset {
   border: 0;
@@ -170,19 +174,30 @@ fieldset {
 .segmented label:last-child {
   border: 0;
 }
+.segmented label:hover {
+  background: rgba(47, 114, 84, 0.1);
+}
 .segmented small {
   display: block;
   font-size: 0.66rem;
   font-weight: 500;
-  color: #547466;
+  color: var(--muted);
   margin-top: 0.15rem;
 }
 .segmented input:checked + label {
   background: var(--leaf);
   color: white;
 }
+.segmented input:checked + label:hover {
+  background: var(--leaf);
+}
 .segmented input:checked + label small {
-  color: #d8eed5;
+  color: var(--light-leaf);
+}
+.style-guide {
+  margin: 0.65rem 0 0;
+  color: var(--muted);
+  font-size: 0.76rem;
 }
 .toggle-row {
   display: flex;
@@ -194,7 +209,7 @@ fieldset {
 }
 .toggle-row span {
   display: block;
-  color: #547466;
+  color: var(--muted);
   margin-top: 0.2rem;
 }
 .switch {
@@ -210,7 +225,7 @@ fieldset {
   width: 3.1rem;
   height: 1.7rem;
   border-radius: 2rem;
-  background: #d9e2c3;
+  background: var(--switch-off);
   position: relative;
   transition: background 0.2s;
 }
@@ -222,7 +237,7 @@ fieldset {
   top: 0.2rem;
   left: 0.2rem;
   border-radius: 50%;
-  background: white;
+  background: var(--white);
   transition: transform 0.2s;
 }
 .switch input:checked + span {
@@ -254,6 +269,14 @@ fieldset {
   margin: 0.4rem 0;
   font-family: "DM Mono";
   font-variant-numeric: tabular-nums;
+}
+.plan-details {
+  margin: 0.8rem 0 0;
+  color: var(--leaf);
+  font:
+    500 0.75rem "DM Mono",
+    monospace;
+  letter-spacing: 0.02em;
 }
 .lawn {
   position: relative;
@@ -352,6 +375,38 @@ fieldset {
   margin: 0;
   max-width: 18rem;
 }
+.shop-tip {
+  align-self: end;
+  margin: 0.75rem 0 0;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(23, 56, 47, 0.18);
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+.copy-plan {
+  justify-self: start;
+  margin-top: 1rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  font:
+    700 0.72rem "DM Mono",
+    monospace;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.copy-plan:hover {
+  background: var(--ink);
+  color: var(--cream);
+}
+.copy-status {
+  min-height: 1.2em;
+  margin: 0.45rem 0 0;
+  color: var(--leaf);
+  font-size: 0.76rem;
+}
 .sr-only {
   position: absolute;
   width: 1px;
@@ -368,7 +423,7 @@ footer {
   font: 500 0.7rem "DM Mono";
   letter-spacing: 0.06em;
   padding: 1rem;
-  color: #547466;
+  color: var(--muted);
 }
 @keyframes pop {
   from {
@@ -393,10 +448,10 @@ footer {
     min-height: 500px;
   }
   .controls {
-    order: 2;
+    order: 1;
   }
   .result {
-    order: 1;
+    order: 2;
   }
 }
 @media (prefers-reduced-motion: reduce) {
