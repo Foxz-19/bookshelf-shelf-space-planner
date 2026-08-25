@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import { calculatePlan, convertTripUnit, isTrip, validateTrip } from '../src/calculator.js';
+import { loadTrip, saveTrip } from '../src/storage.js';
+import { createUI } from '../src/ui.js';
 const base={distance:480,efficiency:28,tank:14,price:3.59,start:75,unit:'imperial',currency:'USD'};
 assert.equal(validateTrip(base),null);
 assert.equal(validateTrip({...base,efficiency:0}),'Fuel efficiency must be greater than zero.');
@@ -14,4 +16,8 @@ const metric=convertTripUnit(base,'metric');
 assert.deepEqual(metric,{distance:772.49,efficiency:8.4,tank:53,price:0.95,start:75,unit:'metric',currency:'USD'});
 assert.equal(Math.round(calculatePlan(metric).range),568);
 assert.deepEqual(convertTripUnit({...base,efficiency:0},'metric'),{...base,efficiency:0,unit:'metric'});
+let stored='';globalThis.localStorage={setItem:(_,value)=>stored=value,getItem:()=>stored};
+assert.equal(saveTrip(base),null);assert.deepEqual(loadTrip(),{trip:base,error:null});stored='{';assert.equal(loadTrip().error,'Saved trip data could not be accessed; changes will stay in this session.');
+const nodes=Object.fromEntries('start-output form-message stops cost range fuel-required-value stops-detail fuel-detail range-detail plan-status distance efficiency tank price start currency distance-unit efficiency-unit tank-unit price-unit save-message toast'.split(' ').map(id=>[id,{textContent:'',value:'',setAttribute(){}}]));
+const ui=createUI({getElementById:id=>nodes[id],querySelectorAll:()=>[{dataset:{unit:'imperial'},setAttribute(){}}]});ui.setInputs(base);ui.render(base,plan,null);assert.equal(nodes.stops.textContent,'1');assert.match(nodes.cost.textContent,/61\.54/);ui.render(base,null,'Invalid');assert.equal(nodes['form-message'].textContent,'Invalid');assert.equal(nodes.range.textContent,'—');
 console.log('calculator tests passed');

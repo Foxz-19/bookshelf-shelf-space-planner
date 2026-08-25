@@ -1,7 +1,7 @@
-/** @typedef {'imperial'|'metric'} Unit */
-/** @typedef {'USD'|'EUR'|'IDR'} Currency */
-/** @typedef {{distance:number, efficiency:number, tank:number, price:number, start:number, unit:Unit, currency:Currency}} Trip */
-/** @typedef {{stops:number, fuel:number, cost:number, range:number}} Plan */
+/** @typedef {import('./types').Unit} Unit */
+/** @typedef {import('./types').Currency} Currency */
+/** @typedef {import('./types').Trip} Trip */
+/** @typedef {import('./types').Plan} Plan */
 
 export const RESERVE = 0.1;
 /** @param {Trip} trip @returns {string|null} */
