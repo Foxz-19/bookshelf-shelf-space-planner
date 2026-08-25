@@ -13,6 +13,6 @@ describe('nap planning', () => {
     expect(plan.options.find(x => x.kind === 'Power Nap')?.minutes).toBe(20);
     expect(plan.options.find(x => x.kind === 'Full Nap')?.minutes).toBe(50);
   });
-  it('keeps the Full Nap label visible when its duration matches another recommendation', () => expect(createPlan(500, 590).options.map(x => x.kind)).toEqual(['Power Nap', 'Sleep Cycle Nap', 'Full Nap']));
+  it('marks the sleep cycle as the Full Nap when their durations match', () => expect(createPlan(500, 590).options).toMatchObject([{ kind: 'Power Nap' }, { kind: 'Sleep Cycle Nap', alsoFullNap: true }]));
   it('formats midnight rollover correctly', () => expect(createPlan(23 * 60 + 50, 20).options[0].alarm).toBe('00:10'));
 });

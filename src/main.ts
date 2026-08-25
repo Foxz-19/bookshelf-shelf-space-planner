@@ -17,6 +17,7 @@ const clockStatus = document.querySelector<HTMLElement>('#clock-status')!;
 let activePlan: Plan | null = null;
 const pad = (n: number) => String(n).padStart(2, '0');
 const date = new Date(); now.value = `${pad(date.getHours())}:${pad(date.getMinutes())}`;
+timeFormat.value = new Intl.DateTimeFormat(undefined, { hour: 'numeric' }).formatToParts(date).some(part => part.type === 'dayPeriod') ? '12h' : '24h';
 function setCurrentTime(): void { const current = new Date(); now.value = `${pad(current.getHours())}:${pad(current.getMinutes())}`; clockStatus.textContent = 'Current time refreshed'; onTimeInput(); }
 function clearError(): void { error.textContent = ''; }
 function updateWindow(): void { const a = parseTime(now.value), b = parseTime(wake.value); if (a === null || b === null) { windowText.textContent = 'Choose a wake-up time'; return; } const tomorrow = b < a; windowText.textContent = `${readableMinutes(tomorrow ? b - a + 1440 : b - a)} available${tomorrow ? ' · tomorrow' : ''}`; }

@@ -28,10 +28,12 @@ try:
         assert page.get_by_role("alert").get_by_text("Please enter both times").is_visible()
         page.locator("#now").fill("13:00")
         page.locator("#wake").fill("14:35")
+        page.locator("#time-format").select_option("12h")
         page.get_by_role("button", name="Find my perfect nap").click()
         page.wait_for_selector("h2:has-text('1h 35m to rest')")
-        assert page.get_by_text("Sleep Cycle Nap").is_visible()
+        assert page.get_by_text("Sleep Cycle Nap", exact=True).is_visible()
         assert page.get_by_text("2:30 PM").is_visible()
+        assert page.get_by_text("Best fit: Sleep Cycle Nap matches this window.").is_visible()
         page.locator("#wake").fill("")
         assert page.locator("#window").inner_text() == "Choose a wake-up time"
         assert page.get_by_text("Set your times, then let the math do the dreaming.").is_visible()
@@ -46,6 +48,7 @@ try:
         page.get_by_role("button", name="Find my perfect nap").click()
         page.wait_for_selector("h2:has-text('30 min to rest')")
         assert page.get_by_text("00:10").is_visible()
+        assert page.get_by_text("TOMORROW · SET ALARM FOR").count() == 2
         page.locator("#now").fill("13:00")
         page.locator("#wake").fill("13:00")
         page.get_by_role("button", name="Find my perfect nap").click()
