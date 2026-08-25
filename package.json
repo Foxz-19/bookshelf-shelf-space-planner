@@ -1,1 +1,1 @@
-{"type":"module","scripts":{"test":"node js/calculator.test.mjs","typecheck":"npx --yes --package=typescript tsc -p jsconfig.json"}}
+{"type":"module","scripts":{"test":"node js/calculator.test.mjs","typecheck":"npx --yes --package=typescript tsc -p jsconfig.json","test:ui":"python test-ui.py","test:all":"npm test && npm run typecheck && npm run test:ui"}}

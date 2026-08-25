@@ -1,4 +1,5 @@
 # Project instructions and generated assessment reports
 *.md
 *.txt
+!requirements-dev.txt
 node_modules/

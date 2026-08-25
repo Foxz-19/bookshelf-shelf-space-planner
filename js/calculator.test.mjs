@@ -8,4 +8,5 @@ assert.equal(calculateBlanket({ people: 0, style: 'comfortable', gear: false }).
 assert.ok(calculateBlanket({ people: 4, style: 'cozy', gear: false }).width * calculateBlanket({ people: 4, style: 'cozy', gear: false }).length < calculateBlanket({ people: 4, style: 'sprawled', gear: false }).width * calculateBlanket({ people: 4, style: 'sprawled', gear: false }).length);
 assert.ok(calculateBlanket({ people: 4, style: 'comfortable', gear: true }).width * calculateBlanket({ people: 4, style: 'comfortable', gear: true }).length > calculateBlanket({ people: 4, style: 'comfortable', gear: false }).width * calculateBlanket({ people: 4, style: 'comfortable', gear: false }).length);
 assert.ok(calculateBlanket({ people: 1, style: 'comfortable', gear: false }).width <= calculateBlanket({ people: 1, style: 'comfortable', gear: false }).length);
+assert.equal(calculateBlanket({ people: 1, style: 'cozy', gear: false }).comparison, 'A compact solo blanket.');
 console.log('calculator tests passed');

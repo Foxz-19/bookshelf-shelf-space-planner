@@ -6,6 +6,7 @@
 const styles = { cozy: 9, comfortable: 12, sprawled: 16 };
 /** @type {Array<[number, string]>} */
 const comparisons = [
+  [19, 'A compact solo blanket.'],
   [20, 'About the size of a twin bed.'],
   [38, 'About the size of a full bed.'],
   [55, 'About the size of a queen bed.'],
