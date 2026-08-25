@@ -18,7 +18,7 @@
         <p class="lede">Find the best little pocket of sleep before your next thing.</p>
       </section>
       <section class="planner" aria-labelledby="planner-title">
-        <div class="planner-heading"><h2 id="planner-title">Plan your doze</h2><div class="planner-tools"><label class="format-label">Time format <select id="time-format" aria-label="Alarm time format"><option value="12h">12-hour</option><option value="24h">24-hour</option></select></label><button id="refresh-now" class="quiet" type="button">Use current time</button><span id="window" aria-live="polite">Choose a wake-up time</span></div></div>
+        <div class="planner-heading"><h2 id="planner-title">Plan your doze</h2><div class="planner-tools"><label class="format-label">Time format <select id="time-format" aria-label="Alarm time format"><option value="12h">12-hour</option><option value="24h">24-hour</option></select></label><button id="refresh-now" class="quiet" type="button" aria-label="Use current time" title="Use current time"><span aria-hidden="true">↻</span><span class="quiet-label">Use current time</span></button><span id="window" aria-live="polite">Choose a wake-up time</span></div></div>
         <form id="planner-form" novalidate>
           <div class="time-fields">
             <label>It’s now <input id="now" name="now" type="time" required aria-describedby="time-help" /></label>

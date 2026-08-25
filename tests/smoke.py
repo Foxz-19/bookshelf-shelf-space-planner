@@ -5,13 +5,16 @@ import time
 
 from playwright.sync_api import sync_playwright
 
-command = ["npm.cmd" if os.name == "nt" else "npm", "run", "dev", "--", "--host", "127.0.0.1"]
-server = subprocess.Popen(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+with socket.socket() as probe:
+    probe.bind(("127.0.0.1", 0))
+    port = probe.getsockname()[1]
+command = ["npm.cmd" if os.name == "nt" else "npm", "run", "dev", "--", "--host", "127.0.0.1", "--port", str(port)]
+server = subprocess.Popen(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT, creationflags=subprocess.CREATE_NEW_PROCESS_GROUP if os.name == "nt" else 0)
 try:
     deadline = time.time() + 30
     while time.time() < deadline:
         try:
-            with socket.create_connection(("127.0.0.1", 5173), timeout=1): break
+            with socket.create_connection(("127.0.0.1", port), timeout=1): break
         except OSError: time.sleep(.2)
     else: raise RuntimeError("Vite server did not start")
     with sync_playwright() as p:
@@ -19,7 +22,7 @@ try:
         page = browser.new_page(viewport={"width": 390, "height": 844})
         errors = []
         page.on("console", lambda msg: errors.append(msg.text) if msg.type == "error" else None)
-        page.goto("http://localhost:5173")
+        page.goto(f"http://127.0.0.1:{port}")
         page.wait_for_load_state("networkidle")
         assert page.locator("#now").input_value()
         assert page.locator("#results").get_attribute("aria-label") == "Nap recommendations"
@@ -33,7 +36,7 @@ try:
         page.wait_for_selector("h2:has-text('1h 35m to rest')")
         assert page.get_by_text("Sleep Cycle Nap", exact=True).is_visible()
         assert page.get_by_text("2:30 PM").is_visible()
-        assert page.get_by_text("Best fit: Sleep Cycle Nap matches this window.").is_visible()
+        assert page.get_by_text("Best fit: Sleep Cycle Nap is a clear match for this window.").is_visible()
         page.locator("#wake").fill("")
         assert page.locator("#window").inner_text() == "Choose a wake-up time"
         assert page.get_by_text("Set your times, then let the math do the dreaming.").is_visible()
@@ -64,5 +67,6 @@ try:
         assert not errors, errors
         browser.close()
 finally:
-    server.terminate()
+    if os.name == "nt": subprocess.run(["taskkill", "/PID", str(server.pid), "/T", "/F"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    else: server.terminate()
     server.wait(timeout=10)
