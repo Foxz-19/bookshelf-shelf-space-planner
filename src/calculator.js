@@ -42,7 +42,7 @@ export function convertTripUnit(trip, nextUnit) {
     distance: rounded(trip.distance * (metric ? 1.609344 : 1 / 1.609344)),
     efficiency: rounded(235.214583 / trip.efficiency),
     tank: rounded(trip.tank * (metric ? 3.785412 : 1 / 3.785412)),
-    price: rounded(trip.price * (metric ? 1 / 3.785412 : 3.785412))
+    price: Number((trip.price * (metric ? 1 / 3.785412 : 3.785412)).toFixed(metric?4:2))
   };
 }
 /** @param {number} value @param {Unit} unit */
