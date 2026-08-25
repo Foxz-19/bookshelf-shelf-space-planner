@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import { calculatePlan, convertTripUnit, isTrip, validateTrip } from '../src/calculator.js';
+const base={distance:480,efficiency:28,tank:14,price:3.59,start:75,unit:'imperial',currency:'USD'};
+assert.equal(validateTrip(base),null);
+assert.equal(validateTrip({...base,efficiency:0}),'Fuel efficiency must be greater than zero.');
+assert.equal(validateTrip({...base,price:NaN}),'Enter a current fuel price.');
+assert.equal(validateTrip({...base,unit:'wrong'}),'Choose miles/gallons or kilometres/litres.');
+assert.equal(validateTrip({...base,start:0}),null);
+assert.equal(isTrip({...base}),true); assert.equal(isTrip({...base,tank:'14'}),false); assert.equal(isTrip([]),false);
+const plan=calculatePlan(base);
+assert.equal(plan.stops,1); assert.equal(plan.fuel,480/28); assert.equal(Math.round(plan.cost*100)/100,61.54); assert.equal(plan.range,352.8);
+assert.equal(calculatePlan({...base,distance:80}).stops,0);
+const metric=convertTripUnit(base,'metric');
+assert.deepEqual(metric,{distance:772.49,efficiency:8.4,tank:53,price:0.95,start:75,unit:'metric',currency:'USD'});
+assert.equal(Math.round(calculatePlan(metric).range),568);
+assert.deepEqual(convertTripUnit({...base,efficiency:0},'metric'),{...base,efficiency:0,unit:'metric'});
+console.log('calculator tests passed');
