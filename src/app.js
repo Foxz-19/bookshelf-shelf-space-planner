@@ -4,7 +4,7 @@ const $ = (selector) => document.querySelector(selector);
 const els = {
   shelfForm: $('#shelf-form'), bookForm: $('#book-form'), shelfWidth: $('#shelf-width'), unit: $('#unit'), widthUnit: $('#width-unit'),
   title: $('#book-title'), bookWidth: $('#book-width'), list: $('#book-list'), empty: $('#empty-state'), meter: $('#meter-fill'),
-  remaining: $('#remaining-space'), used: $('#used-space'), overflow: $('#overflow-note'), count: $('#book-count'), error: $('#form-error'), toast: $('#toast'),
+  remaining: $('#remaining-space'), used: $('#used-space'), overflow: $('#overflow-note'), error: $('#form-error'), toast: $('#toast'),
   clear: $('#clear-button'), dialog: $('#clear-dialog'), dialogCopy: $('#dialog-copy')
 };
 let state = defaultState();
@@ -34,7 +34,6 @@ function render() {
   els.remaining.textContent = overflow ? `${format(info.remaining)} over` : `${format(info.remaining)} left`;
   els.remaining.classList.toggle('is-overflow', overflow);
   els.used.textContent = `${format(info.used)} / ${format(state.width)}`;
-  els.count.textContent = `${state.books.length} book${state.books.length === 1 ? '' : 's'}`;
   els.overflow.textContent = overflow ? `Over capacity by ${format(info.remaining)}. Remove a book or increase shelf width.` : info.percent > 80 ? 'Nearly full — a little room remains.' : '';
   els.overflow.classList.toggle('is-overflow', overflow);
   els.widthUnit.textContent = state.unit;

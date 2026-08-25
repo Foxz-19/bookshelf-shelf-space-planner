@@ -1,5 +1,6 @@
 /** @typedef {import('./types').Book} Book */
 /** @typedef {import('./types').ShelfState} ShelfState */
+/** @typedef {Pick<Storage, 'getItem'|'setItem'|'removeItem'>} ShelfStorage */
 
 export const STORAGE_KEY = 'shelfwise.v1';
 export const COLORS = ['#bb5b42', '#e0a32a', '#3a746d', '#406789', '#755c92', '#a84d60'];
@@ -9,9 +10,9 @@ export const defaultState = () => ({ width: 30, unit: 'in', books: [] });
 
 /** @param {unknown} value @returns {value is ShelfState} */
 export function isShelfState(value) {
-  return !!value && typeof value === 'object' && Number.isFinite(value.width) && value.width > 0 &&
-    (value.unit === 'in' || value.unit === 'cm') && Array.isArray(value.books) &&
-    value.books.every(book => book && typeof book.id === 'string' && book.id.length > 0 && typeof book.title === 'string' && Number.isFinite(book.width) && book.width > 0 && typeof book.color === 'string' && /^#[0-9a-f]{6}$/i.test(book.color));
+  if (!value || typeof value !== 'object') return false;
+  const state = /** @type {ShelfState} */ (value);
+  return Number.isFinite(state.width) && state.width > 0 && (state.unit === 'in' || state.unit === 'cm') && Array.isArray(state.books) && state.books.every(book => book && typeof book.id === 'string' && book.id.length > 0 && typeof book.title === 'string' && Number.isFinite(book.width) && book.width > 0 && typeof book.color === 'string' && /^#[0-9a-f]{6}$/i.test(book.color));
 }
 
 /** @param {ShelfState} state */
@@ -35,7 +36,7 @@ export function convertBooks(state, unit) {
   state.unit = unit;
 }
 
-/** @param {Storage} storage @returns {{state: ShelfState, notice?: string}} */
+/** @param {ShelfStorage} storage @returns {{state: ShelfState, notice?: string}} */
 export function load(storage) {
   try {
     const raw = storage.getItem(STORAGE_KEY);
@@ -49,7 +50,7 @@ export function load(storage) {
   }
 }
 
-/** @param {Storage} storage @param {ShelfState} state @returns {string|undefined} */
+/** @param {ShelfStorage} storage @param {ShelfState} state @returns {string|undefined} */
 export function save(storage, state) {
   try { storage.setItem(STORAGE_KEY, JSON.stringify(state)); }
   catch { return 'Changes are visible now, but could not be saved in this browser.'; }

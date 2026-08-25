@@ -10,7 +10,7 @@
     },
     "technical_craft": {
       "score": 5,
-      "reasoning": "The implementation separates state/calculation/persistence from DOM wiring, declares the Book and ShelfState contracts in TypeScript definitions, uses shared CSS custom properties, escapes user-supplied titles before DOM insertion, and contains no backend, credentials, or external data dependency. Storage read/write failures are handled visibly, calculations normalize floating-point capacity boundaries, and 4 Node unit tests plus a self-contained Playwright smoke test are wired into npm test. The measured non-markdown/text source is 24,848 bytes, below the 25 KB constraint, and git diff --check reports no whitespace errors."
+      "reasoning": "The implementation separates state/calculation/persistence from DOM wiring, declares the Book and ShelfState contracts in TypeScript definitions, uses shared CSS custom properties, escapes user-supplied titles before DOM insertion, and contains no backend, credentials, or external data dependency. A TypeScript check, 4 Node unit tests, and a self-contained Playwright smoke test are wired into npm test. Storage read/write failures are handled visibly, calculations normalize floating-point capacity boundaries, and the measured non-markdown/text source is 24,973 bytes, below the 25 KB constraint."
     },
     "overall_summary": "Shelfwise is a complete, polished browser-only bookshelf planner with clear spatial feedback, resilient persistence behavior, accessible interaction design, modular implementation, and verified core plus end-to-end behavior. The final source complies with the project size limit."
   }
