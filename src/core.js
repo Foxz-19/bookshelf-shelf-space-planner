@@ -11,7 +11,7 @@ export const defaultState = () => ({ width: 30, unit: 'in', books: [] });
 export function isShelfState(value) {
   return !!value && typeof value === 'object' && Number.isFinite(value.width) && value.width > 0 &&
     (value.unit === 'in' || value.unit === 'cm') && Array.isArray(value.books) &&
-    value.books.every(book => book && typeof book.title === 'string' && Number.isFinite(book.width) && book.width > 0);
+    value.books.every(book => book && typeof book.id === 'string' && book.id.length > 0 && typeof book.title === 'string' && Number.isFinite(book.width) && book.width > 0 && typeof book.color === 'string' && /^#[0-9a-f]{6}$/i.test(book.color));
 }
 
 /** @param {ShelfState} state */

@@ -4,7 +4,7 @@ const $ = (selector) => document.querySelector(selector);
 const els = {
   shelfForm: $('#shelf-form'), bookForm: $('#book-form'), shelfWidth: $('#shelf-width'), unit: $('#unit'), widthUnit: $('#width-unit'),
   title: $('#book-title'), bookWidth: $('#book-width'), list: $('#book-list'), empty: $('#empty-state'), meter: $('#meter-fill'),
-  remaining: $('#remaining-space'), used: $('#used-space'), overflow: $('#overflow-note'), error: $('#form-error'), toast: $('#toast'),
+  remaining: $('#remaining-space'), used: $('#used-space'), overflow: $('#overflow-note'), count: $('#book-count'), error: $('#form-error'), toast: $('#toast'),
   clear: $('#clear-button'), dialog: $('#clear-dialog'), dialogCopy: $('#dialog-copy')
 };
 let state = defaultState();
@@ -16,6 +16,7 @@ const storage = (() => {
 })();
 
 function format(value) { return `${new Intl.NumberFormat(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Math.abs(value))} ${state.unit}`; }
+function dismissToast() { clearTimeout(toastTimer); lastRemoved = undefined; els.toast.classList.remove('visible'); els.toast.replaceChildren(); }
 function announce(message, canUndo = false) {
   clearTimeout(toastTimer); els.toast.replaceChildren(document.createTextNode(message));
   if (canUndo) { const undo = document.createElement('button'); undo.id = 'undo-remove'; undo.type = 'button'; undo.textContent = 'Undo'; els.toast.append(' ', undo); }
@@ -28,9 +29,12 @@ function render() {
   const className = overflow ? 'is-overflow' : info.percent > 80 ? 'is-warning' : '';
   els.meter.style.transform = `scaleX(${Math.min(info.percent, 100) / 100})`;
   els.meter.className = `meter-fill ${className}`;
+  els.meter.setAttribute('aria-valuenow', String(Math.min(info.percent, 100)));
+  els.meter.setAttribute('aria-valuetext', `${format(info.used)} of ${format(state.width)} used`);
   els.remaining.textContent = overflow ? `${format(info.remaining)} over` : `${format(info.remaining)} left`;
   els.remaining.classList.toggle('is-overflow', overflow);
   els.used.textContent = `${format(info.used)} / ${format(state.width)}`;
+  els.count.textContent = `${state.books.length} book${state.books.length === 1 ? '' : 's'}`;
   els.overflow.textContent = overflow ? `Over capacity by ${format(info.remaining)}. Remove a book or increase shelf width.` : info.percent > 80 ? 'Nearly full — a little room remains.' : '';
   els.overflow.classList.toggle('is-overflow', overflow);
   els.widthUnit.textContent = state.unit;
@@ -54,7 +58,8 @@ els.shelfForm.addEventListener('submit', (event) => {
   event.preventDefault(); els.error.textContent = '';
   const width = validateNumber(els.shelfWidth.value, 0.1, 'shelf width greater than zero', els.shelfWidth); if (!width) return;
   const unit = els.unit.value === 'cm' ? 'cm' : 'in';
-  convertBooks(state, unit); state.width = width; persist(); render(); announce('Shelf dimensions updated.');
+  if (lastRemoved && state.unit !== unit) { const factor = unit === 'cm' ? 2.54 : 1 / 2.54; lastRemoved.book.width = Number((lastRemoved.book.width * factor).toFixed(6)); }
+  convertBooks(state, unit); state.width = width; persist(); render(); announce('Shelf dimensions updated.', Boolean(lastRemoved));
 });
 els.bookForm.addEventListener('submit', (event) => {
   event.preventDefault(); els.error.textContent = '';
@@ -73,6 +78,6 @@ els.toast.addEventListener('click', (event) => {
   state.books.splice(lastRemoved.index, 0, lastRemoved.book); lastRemoved = undefined; persist(); render(); announce('Book restored to shelf.');
 });
 els.clear.addEventListener('click', () => { els.dialogCopy.textContent = `This will remove ${state.books.length} book${state.books.length === 1 ? '' : 's'} from this shelf.`; els.dialog.showModal(); });
-els.dialog.addEventListener('close', () => { if (els.dialog.returnValue === 'confirm') { state.books = []; persist(); render(); announce('Shelf cleared.'); } els.clear.focus(); });
+els.dialog.addEventListener('close', () => { if (els.dialog.returnValue === 'confirm') { state.books = []; dismissToast(); persist(); render(); announce('Shelf cleared.'); } els.clear.focus(); });
 
 const loaded = load(storage); state = loaded.state; render(); if (loaded.notice) announce(loaded.notice);

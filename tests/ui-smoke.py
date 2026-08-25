@@ -38,9 +38,12 @@ try:
 
         page.get_by_role("button", name="Remove A Wizard of Earthsea, 1.20 in").click()
         assert page.locator(".book").count() == 2
+        page.locator("#shelf-width").fill("76.2")
+        page.locator("#unit").select_option("cm")
+        page.get_by_role("button", name="Update Shelf").click()
         page.get_by_role("button", name="Undo").click()
         assert page.locator(".book").count() == 3
-        page.get_by_role("button", name="Remove A Wizard of Earthsea, 1.20 in").click()
+        page.get_by_role("button", name="Remove A Wizard of Earthsea, 3.05 cm").click()
         assert page.locator(".book").count() == 2
         page.get_by_role("button", name="Clear Books").click()
         assert page.get_by_role("dialog").is_visible()
@@ -48,6 +51,7 @@ try:
         page.get_by_role("dialog").wait_for(state="hidden")
         page.wait_for_function("document.querySelectorAll('.book').length === 0")
         assert page.locator(".book").count() == 0
+        assert page.get_by_role("button", name="Undo").count() == 0
         assert "first story" in page.locator("#empty-state").inner_text()
         assert not errors, errors
         browser.close()
