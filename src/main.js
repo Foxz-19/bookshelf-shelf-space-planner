@@ -12,9 +12,10 @@ function convertUnits(nextUnit){
   if(state.unit===nextUnit)return;
   read(); state=convertTripUnit(state,nextUnit); ui.setInputs(state);
 }
-document.getElementById('trip-form').addEventListener('input',update);
+document.getElementById('trip-form').addEventListener('input',event=>{if(['efficiency','tank'].includes(event.target.id))/** @type {HTMLSelectElement} */(document.getElementById('vehicle')).value='custom';update();});
 document.getElementById('trip-form').addEventListener('change',update);
 document.getElementById('vehicle').addEventListener('change',event=>{const preset=presets[/** @type {HTMLSelectElement} */(event.currentTarget).value];if(!preset)return;const nextUnit=state.unit;state={...state,...preset,unit:'imperial'};if(nextUnit==='metric')state=convertTripUnit(state,'metric');ui.setInputs(state);update();});
+document.getElementById('currency').addEventListener('change',event=>ui.toast(`Fuel price is now interpreted as ${/** @type {HTMLSelectElement} */(event.currentTarget).value}; update it if needed.`));
 document.querySelectorAll('[data-unit]').forEach(button=>button.addEventListener('click',()=>{convertUnits(/** @type {'imperial'|'metric'} */(button.dataset.unit));update();}));
 document.getElementById('share').addEventListener('click',async()=>{read();const error=validateTrip(state);if(error){ui.toast('Complete valid trip details before sharing.',true);return;}const plan=calculatePlan(state);const text=`Fuelway plan: ${plan.stops} fuel stop${plan.stops===1?'':'s'}, ${new Intl.NumberFormat(undefined,{style:'currency',currency:state.currency,maximumFractionDigits:state.currency==='IDR'?0:2}).format(plan.cost)}, ${plan.fuel.toFixed(1)} ${state.unit==='imperial'?'gal':'L'} required.`;try{if(navigator.share)await navigator.share({title:'Fuelway road trip plan',text});else await navigator.clipboard.writeText(text);ui.toast(navigator.share?'Plan shared.':'Plan copied to clipboard.');}catch(error){if(error.name!=='AbortError')ui.toast('Could not share the plan on this device.',true);}});
 document.getElementById('print').addEventListener('click',()=>window.print());
